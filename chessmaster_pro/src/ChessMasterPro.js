@@ -457,10 +457,18 @@ function UndoRedoBar({ canUndo, canRedo, onUndo, onRedo }) {
 // ========== Game Mode Selector / Restart ==========
 
 function GameControls({ mode, setMode, onRestart, flipped, setFlipped }) {
+  // Changing game modes should also restart the game to ensure proper piece ownership
+  const handleModeChange = (newMode) => {
+    setMode(newMode);
+    // We restart the game when changing modes to ensure proper initial state
+    // This is called after setMode to ensure the restart uses the new mode
+    setTimeout(() => onRestart(), 0);
+  };
+  
   return (
     <div style={{display:'flex',gap:10, alignItems:'center', width:'100%', flexWrap:'wrap'}}>
       <span>
-        <select value={mode} onChange={e=>setMode(e.target.value)}>
+        <select value={mode} onChange={e=>handleModeChange(e.target.value)}>
           <option value="hvh">Human vs Human</option>
           <option value="hvai">Human vs AI</option>
         </select>
