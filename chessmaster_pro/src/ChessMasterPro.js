@@ -747,10 +747,13 @@ export default function ChessMasterPro() {
 
   // Select move from history (for preview)
   function handleSelectMove(idx) {
-    // For now, just replay all moves up to idx
+    // Replay all moves up to idx
     const h = history.slice(0, idx+1);
     setBoard(reconstructBoardFromHistory(h));
-    setTurn(((idx+1)%2)===0 ? 'w' : 'b');
+    // If we're viewing history, the next turn should be the opposite of the last move's color
+    const lastMove = h[h.length - 1];
+    // Use the piece color to determine whose turn is next
+    setTurn(colorOf(lastMove.piece) === 'w' ? 'b' : 'w');
     setActive(null);
   }
 
