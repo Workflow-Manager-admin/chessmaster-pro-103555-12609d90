@@ -21,3 +21,4 @@ npm WARN deprecated (For a CapTP with native promises, see @endo/eventual-send a
 npm WARN deprecated workbox-cacheable-response@6.6.0: workbox-background-sync@6.6.0
 npm WARN deprecated workbox-google-analytics@6.6.0: It is not compatible with newer versions of GA starting with v4, as long as you are using GAv3 it should be ok, but the package is not longer being maintained
 npm WARN deprecated svgo@1.3.2: This SVGO version is no longer supported. Upgrade to v2.x.x.
+npm WARN deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
