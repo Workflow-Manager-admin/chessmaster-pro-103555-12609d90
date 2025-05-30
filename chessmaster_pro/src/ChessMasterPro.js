@@ -878,9 +878,9 @@ export default function ChessMasterPro() {
     // Clear any active selection
     setActive(null);
     
-    // In AI mode, enforce turn correctness based on board flip state
+    // In AI mode, enforce turn correctness based on consistent piece ownership
     if (mode === 'hvai') {
-      const aiColor = flipped ? 'w' : 'b';
+      const aiColor = 'b'; // AI is always black
       
       // If reconstructed state would put us at AI's turn but AI move isn't in history,
       // return to full history or current state
