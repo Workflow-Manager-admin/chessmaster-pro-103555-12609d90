@@ -36,6 +36,21 @@ function colorOf(piece) {
   return (piece === piece.toUpperCase()) ? 'w' : 'b';
 }
 
+// Convert actual piece to visual piece (Player 1 always white, Player 2 always black)
+function getVisualPiece(piece, currentTurn) {
+  if (!piece) return null;
+  
+  // Get the piece type (pawn, knight, etc.)
+  const pieceType = piece.toUpperCase();
+  
+  // Determine if this is Player 1's piece or Player 2's piece
+  const isPlayer1Piece = piece === piece.toUpperCase(); // white pieces are uppercase
+  
+  // Player 1's pieces are always displayed as white (uppercase)
+  // Player 2's pieces are always displayed as black (lowercase)
+  return isPlayer1Piece ? pieceType : pieceType.toLowerCase();
+}
+
 // Utility: to algebraic notation (e.g. 'e4')
 function posToAlg(row, col) {
   return String.fromCharCode(97+col) + (8-row);
@@ -299,7 +314,7 @@ function ChessBoard({
               }}
               tabIndex={0}
             >
-              <span>{board[row][col] ? PIECE_UNICODE[board[row][col]] : ""}</span>
+              <span>{board[row][col] ? PIECE_UNICODE[getVisualPiece(board[row][col], turn)] : ""}</span>
               {isLegal && <span style={{
                 position:'absolute',
                 left: '50%',
