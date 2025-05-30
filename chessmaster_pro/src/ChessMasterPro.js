@@ -531,15 +531,15 @@ export default function ChessMasterPro() {
   useEffect(()=>{
     if (winner || mode !== 'hvai') return;
     
-    // AI is black (normal), white if board flipped
-    const aiColor = flipped ? 'w' : 'b';
+    // AI always controls black pieces regardless of board orientation
+    const aiColor = 'b';
     
     if (turn === aiColor) {
-      // Only allow AI to move if it's actually the AI's turn and color
+      // Only allow AI to move if it's black's turn
       aiMove();
     }
     // eslint-disable-next-line
-  }, [turn, mode, aiDifficulty, winner, flipped]);
+  }, [turn, mode, aiDifficulty, winner]);
 
   // Move generation on active square for legal
   useEffect(()=>{
