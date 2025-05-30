@@ -620,19 +620,21 @@ export default function ChessMasterPro() {
     const piece = board[fr][fc];
     const target = board[tr][tc];
     
-    // Verify piece belongs to current player
+    // Verify piece belongs to current turn
     const pieceColor = colorOf(piece);
     if (pieceColor !== turn) {
       return; // Cannot move opponent's piece
     }
     
-    // In Human vs AI mode, enforce control restrictions
+    // In Human vs AI mode, enforce that human always controls white pieces
+    // and AI always controls black pieces
     if (mode === 'hvai') {
-      const playerColor = flipped ? 'b' : 'w';
-      const aiColor = opposite(playerColor);
+      const humanColor = 'w'; // Human is always white
       
-      if ((turn === playerColor && !isPlayerTurn()) || 
-          (turn === aiColor && isPlayerTurn())) {
+      // If it's white's turn, only the human can move
+      // If it's black's turn, only the AI can move
+      if ((turn === humanColor && !isHumanPlayer()) || 
+          (turn === 'b' && isHumanPlayer())) {
         return; // Wrong player trying to move
       }
     }
@@ -891,11 +893,14 @@ export default function ChessMasterPro() {
     }
   }
 
-  // Helper function to determine if it's the human player's turn
-  function isPlayerTurn() {
-    // In hvai mode with normal board: player is white (turn === 'w')
-    // In hvai mode with flipped board: player is black (turn === 'b')
-    return (mode === 'hvai' && ((turn === 'w' && !flipped) || (turn === 'b' && flipped)));
+  // Helper function to determine if the current interaction is from the human player
+  function isHumanPlayer() {
+    // In 'hvh' mode, it's always a human player
+    if (mode === 'hvh') return true;
+    
+    // In 'hvai' mode, human controls white regardless of board orientation
+    // The flipped state only changes visual representation, not piece ownership
+    return true; // This is called from human UI interactions, so always true
   }
   
   // Has any legal move left?
