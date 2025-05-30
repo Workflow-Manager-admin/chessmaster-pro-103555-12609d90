@@ -37,6 +37,26 @@ function colorOf(piece) {
 }
 
 // Convert actual piece to visual piece (Player 1 always white, Player 2 always black)
+function getVisualPiece(piece) {
+  if (!piece) return null;
+  
+  // Get the piece type (pawn, knight, bishop, etc.)
+  const pieceType = piece.toUpperCase();
+  
+  // In the underlying game logic:
+  // - Uppercase pieces ('P', 'R', etc.) belong to the white player (Player 1)
+  // - Lowercase pieces ('p', 'r', etc.) belong to the black player (Player 2)
+  
+  // For display:
+  // - Player 1's pieces should be displayed as white (uppercase in the Unicode map)
+  // - Player 2's pieces should be displayed as black (lowercase in the Unicode map)
+  
+  // Since the existing logic already uses uppercase for white and lowercase for black,
+  // we can simply return the piece as-is, as our requirement matches the existing implementation
+  return piece;
+}
+
+// Convert actual piece to visual piece (Player 1 always white, Player 2 always black)
 function getVisualPiece(piece, currentTurn) {
   if (!piece) return null;
   
