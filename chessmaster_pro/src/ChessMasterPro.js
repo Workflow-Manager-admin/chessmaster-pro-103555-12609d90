@@ -705,10 +705,12 @@ export default function ChessMasterPro() {
   function handleRedo() {
     if (redoStack.length === 0) return;
     const move = redoStack[0];
-    setHistory(hist => [...hist, move]);
+    const updatedHistory = [...history, move];
+    setHistory(updatedHistory);
     setRedoStack(redoStack.slice(1));
-    setBoard(reconstructBoardFromHistory([...history, move]));
-    setTurn(t => opposite(t));
+    setBoard(reconstructBoardFromHistory(updatedHistory));
+    // Set the turn to the opposite of the last moved piece's color
+    setTurn(colorOf(move.piece) === 'w' ? 'b' : 'w');
     setActive(null);
   }
   // Reconstructs the board from move history
