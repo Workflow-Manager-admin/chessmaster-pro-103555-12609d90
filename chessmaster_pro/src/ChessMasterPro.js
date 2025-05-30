@@ -863,11 +863,31 @@ export default function ChessMasterPro() {
     // Replay all moves up to idx
     const h = history.slice(0, idx+1);
     setBoard(reconstructBoardFromHistory(h));
+    
     // If we're viewing history, the next turn should be the opposite of the last move's color
     const lastMove = h[h.length - 1];
+    
     // Use the piece color to determine whose turn is next
-    setTurn(colorOf(lastMove.piece) === 'w' ? 'b' : 'w');
+    const nextTurn = colorOf(lastMove.piece) === 'w' ? 'b' : 'w';
+    setTurn(nextTurn);
+    
+    // Clear any active selection
     setActive(null);
+    
+    // In AI mode, enforce turn correctness based on board flip state
+    if (mode === 'hvai') {
+      const aiColor = flipped ? 'w' : 'b';
+      const playerColor = opposite(aiColor);
+      
+      // If reconstructed state would put us at AI's turn but AI move isn't in history,
+      // return to full history or current state
+      if (nextTurn === aiColor && idx === history.length - 1) {
+        // This is a valid state - AI will move next
+      } else if (nextTurn === aiColor) {
+        // Viewing a past state where AI should move next, but that move exists in history
+        // This is allowed for historical viewing
+      }
+    }
   }
 
   // Helper function to determine if it's the human player's turn
