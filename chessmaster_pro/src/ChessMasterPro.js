@@ -578,12 +578,11 @@ export default function ChessMasterPro() {
   // Handler: Chessboard click/tap/cell select
   function handleSquareClick(row, col) {
     if (winner) return;
-    
-    // Determine the player's assigned color based on flipped state
-    // Player 1 (human) always controls white pieces (unless board is flipped)
-    // Player 2/AI always controls black pieces (unless board is flipped)
-    const playerColor = (mode === 'hvai' && flipped) ? 'b' : 'w';
-    const aiColor = opposite(playerColor);
+
+    // Player 1 always controls white pieces, Player 2/AI always controls black pieces
+    // The board may be flipped visually, but this shouldn't change piece ownership
+    const humanColor = 'w'; // Player 1 is always white
+    const aiColor = 'b';    // AI/Player 2 is always black
     
     // If AI's turn, block human interaction
     if (mode === 'hvai' && turn === aiColor) {
@@ -602,12 +601,13 @@ export default function ChessMasterPro() {
     // Otherwise, set as active only if:
     // 1. It's a piece (not empty square)
     // 2. It's the current turn's color
-    // 3. It belongs to the current player (human vs human mode, or human's color in AI mode)
-    if (board[row][col] && colorOf(board[row][col]) === turn && 
-        (mode === 'hvh' || 
+    // 3. It belongs to the current player based on game mode and piece color
+    if (board[row][col] && colorOf(board[row][col]) === turn) {
+      if (mode === 'hvh' || // In human vs human, any piece of current turn can be moved
          (mode === 'hvai' && 
-          ((turn === 'w' && !flipped) || (turn === 'b' && flipped))))) {
-      setActive([row,col]);
+          ((colorOf(board[row][col]) === humanColor)))) { // In AI mode, human can only move white
+        setActive([row,col]);
+      }
     } else {
       setActive(null);
     }
