@@ -817,7 +817,7 @@ export default function ChessMasterPro() {
       // If in AI mode and it becomes AI's turn after redo, trigger AI move
       if (mode === 'hvai') {
         const nextTurn = colorOf(move.piece) === 'w' ? 'b' : 'w';
-        const aiColor = flipped ? 'w' : 'b';
+        const aiColor = 'b'; // AI is always black
         
         if (nextTurn === aiColor && !redoStack.length) {
           // Schedule AI move after state update
@@ -941,6 +941,7 @@ export default function ChessMasterPro() {
   // Restart game
   function handleRestart() {
     setBoard(initialBoard());
+    // White always moves first in chess
     setTurn('w');
     setActive(null);
     setHistory([]);
@@ -948,6 +949,7 @@ export default function ChessMasterPro() {
     setRedoStack([]);
     setWinner(null);
     setClocks({w:5*60*1000, b:5*60*1000});
+    // White's clock starts running first
     setClockRunning({w:true, b:false});
     setCaptured({w:[], b:[]});
     setCastlingRights({w: {K: true, Q: true}, b: {K: true, Q: true}});
