@@ -717,13 +717,41 @@ export default function ChessMasterPro() {
   function handleUndo() {
     if (history.length === 0) return;
     const last = history[history.length-1];
+    
+    // In hvai mode, prevent undo during AI's turn
+    if (mode === 'hvai' && !isPlayerTurn()) {
+      return;
+    }
+    
+    // For AI mode, undo both AI's move and player's move (2 steps)
+    const shouldUndoTwice = mode === 'hvai' && history.length > 1;
+    
     // Restore state: For MVP, only restore board, turn, clocks etc
-    const prev = history.slice(0,-1);
-    setRedoStack(rs=>[last,...rs]);
+    let prev;
+    if (shouldUndoTwice) {
+      // Undo both AI and player move
+      const secondLast = history[history.length-2];
+      prev = history.slice(0, -2);
+      setRedoStack(rs=>[last, secondLast, ...rs]);
+    } else {
+      prev = history.slice(0, -1);
+      setRedoStack(rs=>[last, ...rs]);
+    }
+    
     setHistory(prev);
-    // TODO: Also restore full state for all chess states (would keep snapshots or track full FEN history in prod)
+    // Reconstruct the board and set proper turn
     setBoard(prev.length===0 ? initialBoard() : reconstructBoardFromHistory(prev));
-    setTurn(t => opposite(t));
+    
+    // Ensure turn is set correctly after undo
+    // If no history left, white should go first
+    if (prev.length === 0) {
+      setTurn('w');
+    } else {
+      // Otherwise set turn to opposite of the last remaining move's piece color
+      const lastPieceColor = colorOf(prev[prev.length-1].piece);
+      setTurn(opposite(lastPieceColor));
+    }
+    
     // Should probably restore clocks per-move in real implementation
     // Remove captured
     if (last.capture) {
@@ -736,6 +764,20 @@ export default function ChessMasterPro() {
         return newCaptured;
       });
     }
+    
+    // Do the same for the second move if needed
+    if (shouldUndoTwice && history.length > 1) {
+      const secondLast = history[history.length-2];
+      if (secondLast.capture) {
+        const capturingPlayer = colorOf(secondLast.piece);
+        setCaptured(cap => {
+          const newCaptured = {...cap};
+          newCaptured[capturingPlayer] = cap[capturingPlayer].filter((_, i) => i !== cap[capturingPlayer].lastIndexOf(secondLast.capture));
+          return newCaptured;
+        });
+      }
+    }
+    
     setActive(null);
     setWinner(null);
   }
