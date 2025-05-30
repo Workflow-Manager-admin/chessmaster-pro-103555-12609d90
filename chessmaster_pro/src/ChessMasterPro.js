@@ -616,8 +616,23 @@ export default function ChessMasterPro() {
     const [fr, fc] = from, [tr, tc] = to;
     const piece = board[fr][fc];
     const target = board[tr][tc];
-
-    // TODO: Check legality for special moves: castling, en passant, promotion
+    
+    // Verify piece belongs to current player
+    const pieceColor = colorOf(piece);
+    if (pieceColor !== turn) {
+      return; // Cannot move opponent's piece
+    }
+    
+    // In Human vs AI mode, enforce control restrictions
+    if (mode === 'hvai') {
+      const playerColor = flipped ? 'b' : 'w';
+      const aiColor = opposite(playerColor);
+      
+      if ((turn === playerColor && !isPlayerTurn()) || 
+          (turn === aiColor && isPlayerTurn())) {
+        return; // Wrong player trying to move
+      }
+    }
 
     const newBoard = cloneBoard(board);
     // Promotion
