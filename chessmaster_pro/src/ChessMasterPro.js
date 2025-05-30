@@ -28,7 +28,6 @@ const PIECE_UNICODE = {
 };
 
 function opposite(color) { return color === 'w' ? 'b' : 'w'; }
-function isUpper(str) { return str === str.toUpperCase(); }
 
 // Returns piece color for 'P'/'k' etc
 function colorOf(piece) {
@@ -708,7 +707,6 @@ export default function ChessMasterPro() {
 
   // Move notation
   function pieceNotation(from, to, piece, capture) {
-    const files = 'abcdefgh';
     let s = '';
     if (piece.toUpperCase() !== 'P') s += piece.toUpperCase();
     if (capture) s += 'x';
