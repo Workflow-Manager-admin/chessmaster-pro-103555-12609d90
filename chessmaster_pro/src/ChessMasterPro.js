@@ -693,9 +693,12 @@ export default function ChessMasterPro() {
     // Should probably restore clocks per-move in real implementation
     // Remove captured
     if (last.capture) {
+      // The capturing player is same as the color of the moved piece
+      const capturingPlayer = colorOf(last.piece); 
+      // We need to remove the captured piece from their list
       setCaptured(cap => {
         const newCaptured = {...cap};
-        newCaptured[last.piece === last.piece.toUpperCase() ? 'w':'b'] = cap[last.piece === last.piece.toUpperCase() ? 'w':'b'].slice(0,-1);
+        newCaptured[capturingPlayer] = cap[capturingPlayer].filter((_, i) => i !== cap[capturingPlayer].lastIndexOf(last.capture));
         return newCaptured;
       });
     }
