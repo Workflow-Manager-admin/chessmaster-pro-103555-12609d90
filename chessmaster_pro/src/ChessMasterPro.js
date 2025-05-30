@@ -917,10 +917,10 @@ export default function ChessMasterPro() {
   async function aiMove() {
     if (winner) return;
     
-    // Determine AI's color based on board orientation
-    const aiColor = flipped ? 'w' : 'b';
+    // AI always controls black pieces
+    const aiColor = 'b';
     
-    // Only make moves if it's the AI's turn
+    // Only make moves if it's black's turn
     if (turn !== aiColor) return;
     
     setTimeout(()=> {
@@ -928,7 +928,7 @@ export default function ChessMasterPro() {
       const [, move] = minimax(board, depth, true, aiColor, {castlingRights, enPassantTarget}, -Infinity, Infinity);
       if (!move) { setWinner('d'); return; }
       
-      // Double check the piece being moved is actually of the AI's color
+      // Double check the piece being moved is actually black
       const piece = board[move.from[0]][move.from[1]];
       if (piece && colorOf(piece) === aiColor) {
         handleMovePiece(move.from, move.to);
