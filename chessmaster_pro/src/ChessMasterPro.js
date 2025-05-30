@@ -723,7 +723,7 @@ export default function ChessMasterPro() {
     const last = history[history.length-1];
     
     // In hvai mode, prevent undo during AI's turn
-    if (mode === 'hvai' && !isPlayerTurn()) {
+    if (mode === 'hvai' && turn === 'b') {  // AI is always black
       return;
     }
     
