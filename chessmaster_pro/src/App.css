@@ -4,6 +4,10 @@
   --text-color: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.7);
   --border-color: rgba(255, 255, 255, 0.1);
+
+  --cmp-primary: #2e2e2e;
+  --cmp-secondary: #f0d9b5;
+  --cmp-accent: #b58863;
 }
 
 body {
