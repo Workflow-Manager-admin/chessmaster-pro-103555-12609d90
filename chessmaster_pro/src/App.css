@@ -8,6 +8,66 @@
   --cmp-primary: #2e2e2e;
   --cmp-secondary: #f0d9b5;
   --cmp-accent: #b58863;
+
+  /* CHESS DESIGN PALETTE */
+  --board-bg-dark: #b58863;
+  --board-bg-light: #f0d9b5;
+  --board-border: #4d4d44;
+  --piece-white-fill: #ffffff;
+  --piece-black-fill: #333333;
+  --piece-outline: #222222;
+}
+
+.cb-board {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  aspect-ratio: 1/1;
+  border: 2px solid var(--board-border);
+  background: var(--board-border);
+  width: min(95vw, 420px);
+  max-width: 100vw;
+  max-height: 90vw;
+  margin: 0 auto;
+  box-sizing: border-box;
+  border-radius: 0;
+  /* No extra spacing around board */
+  padding: 0;
+}
+
+.cb-square {
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Square shape, handled by board aspect-ratio and grid */
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  position: relative;
+  cursor: default;
+}
+
+.cb-square.cb-light {
+  background: var(--board-bg-light);
+}
+
+.cb-square.cb-dark {
+  background: var(--board-bg-dark);
+}
+
+/* Remove focus/hover/active effects for squares (flat look) */
+.cb-square:focus,
+.cb-square:active,
+.cb-square:hover {
+  outline: none;
+  border: none;
+  box-shadow: none;
+  background: inherit;
 }
 
 body {
