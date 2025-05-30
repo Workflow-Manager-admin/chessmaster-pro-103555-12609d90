@@ -401,12 +401,14 @@ function CapturedPieces({ captured }) {
   return (
     <div style={{padding:'5px 0', minHeight:'2.3em', fontSize:'1.2rem'}}>
       {Object.entries(grouped)
-        .sort((a,b)=> (b[1]-a[1]) || (a[0].localeCompare(b[0])))
-        .map(([p, cnt])=>
-        <span key={p} style={{marginRight:7, opacity:0.8}}>
-          {PIECE_UNICODE[p]}{cnt>1?`×${cnt}`:''}
-        </span>
-      )}
+        .sort((a, b) => (b[1] - a[1]) || (a[0].localeCompare(b[0])))
+        .map(([p, cnt]) => {
+          return (
+            <span key={p} style={{marginRight:7, opacity:0.8}}>
+              {PIECE_UNICODE[p]}{cnt > 1 ? `×${cnt}` : ''}
+            </span>
+          );
+        })}
     </div>
   );
 }
