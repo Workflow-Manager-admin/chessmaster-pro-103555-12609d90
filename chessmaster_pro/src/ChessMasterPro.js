@@ -488,6 +488,7 @@ export default function ChessMasterPro() {
   // State: position, turn, clocks, move history, captured, settings, timers etc.
   const [board, setBoard] = useState(initialBoard());
   const [history, setHistory] = useState([]); // {from, to, piece, capture, notation, ...}
+  // White always moves first in chess
   const [turn, setTurn] = useState('w');
   const [active, setActive] = useState(null); // [row,col]
   const [legalMoves, setLegalMoves] = useState([]);
@@ -495,7 +496,9 @@ export default function ChessMasterPro() {
   const [mode, setMode] = useState('hvai'); // 'hvh', 'hvai'
   const [aiDifficulty, setAiDifficulty] = useState(2);
   const [clocks, setClocks] = useState({w:5*60*1000, b:5*60*1000}); // ms
+  // White's clock starts running first
   const [clockRunning, setClockRunning] = useState({w:true, b:false});
+  // Initialize captured pieces as empty arrays
   const [captured, setCaptured] = useState({w:[], b:[]});
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
