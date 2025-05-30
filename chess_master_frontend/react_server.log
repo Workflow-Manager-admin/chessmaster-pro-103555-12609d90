@@ -18,3 +18,174 @@ Note that the development build is not optimized.
 To create a production build, use npm run build.
 
 webpack compiled successfully
+Failed to compile.
+
+Module not found: Error: Can't resolve '/home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/chess_master_frontend/src/index.js' in '/home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/chess_master_frontend'
+ERROR in main
+Module not found: Error: Can't resolve '/home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/chess_master_frontend/src/index.js' in '/home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/chess_master_frontend'
+
+ERROR in Error: Child compilation failed:
+  Module not found: Error: Can't resolve '/home/kavia/workspace/code-generation/  chessmaster-pro-103555-12609d90/chess_master_frontend/public/index.html' in '/  home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/chess_mas  ter_frontend'
+  ModuleNotFoundError: Module not found: Error: Can't resolve '/home/kavia/works  pace/code-generation/chessmaster-pro-103555-12609d90/chess_master_frontend/pub  lic/index.html' in '/home/kavia/workspace/code-generation/chessmaster-pro-1035  55-12609d90/chess_master_frontend'
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/webpack/lib/Compilation.js:2123:28
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/webpack/lib/NormalModuleFactory.js:923:13
+      at eval (eval at create (/home/kavia/workspace/code-generation/chessmaster  -pro-103555-12609d90/chess_master_frontend/node_modules/tapable/lib/HookCodeFa  ctory.js:33:10), <anonymous>:10:1)
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/webpack/lib/NormalModuleFactory.js:339:22
+      at eval (eval at create (/home/kavia/workspace/code-generation/chessmaster  -pro-103555-12609d90/chess_master_frontend/node_modules/tapable/lib/HookCodeFa  ctory.js:33:10), <anonymous>:9:1)
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/webpack/lib/NormalModuleFactory.js:520:22
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/webpack/lib/NormalModuleFactory.js:151:10
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/webpack/lib/NormalModuleFactory.js:783:25
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/webpack/lib/NormalModuleFactory.js:1008:8
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/webpack/lib/NormalModuleFactory.js:1137:5
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/neo-async/async.js:6883:13
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/webpack/lib/NormalModuleFactory.js:1120:45
+      at finishWithoutResolve (/home/kavia/workspace/code-generation/chessmaster  -pro-103555-12609d90/chess_master_frontend/node_modules/enhanced-resolve/lib/R  esolver.js:567:11)
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/enhanced-resolve/lib/Resolver.js:656:15
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/enhanced-resolve/lib/Resolver.js:718:5
+      at eval (eval at create (/home/kavia/workspace/code-generation/chessmaster  -pro-103555-12609d90/chess_master_frontend/node_modules/tapable/lib/HookCodeFa  ctory.js:33:10), <anonymous>:16:1)
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/enhanced-resolve/lib/Resolver.js:718:5
+      at eval (eval at create (/home/kavia/workspace/code-generation/chessmaster  -pro-103555-12609d90/chess_master_frontend/node_modules/tapable/lib/HookCodeFa  ctory.js:33:10), <anonymous>:16:1)
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/enhanced-resolve/lib/Resolver.js:718:5
+      at eval (eval at create (/home/kavia/workspace/code-generation/chessmaster  -pro-103555-12609d90/chess_master_frontend/node_modules/tapable/lib/HookCodeFa  ctory.js:33:10), <anonymous>:15:1)
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/enhanced-resolve/lib/Resolver.js:718:5
+      at eval (eval at create (/home/kavia/workspace/code-generation/chessmaster  -pro-103555-12609d90/chess_master_frontend/node_modules/tapable/lib/HookCodeFa  ctory.js:33:10), <anonymous>:16:1)
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/enhanced-resolve/lib/Resolver.js:718:5
+      at eval (eval at create (/home/kavia/workspace/code-generation/chessmaster  -pro-103555-12609d90/chess_master_frontend/node_modules/tapable/lib/HookCodeFa  ctory.js:33:10), <anonymous>:16:1)
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/enhanced-resolve/lib/Resolver.js:718:5
+      at eval (eval at create (/home/kavia/workspace/code-generation/chessmaster  -pro-103555-12609d90/chess_master_frontend/node_modules/tapable/lib/HookCodeFa  ctory.js:33:10), <anonymous>:16:1)
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/enhanced-resolve/lib/Resolver.js:718:5
+      at eval (eval at create (/home/kavia/workspace/code-generation/chessmaster  -pro-103555-12609d90/chess_master_frontend/node_modules/tapable/lib/HookCodeFa  ctory.js:33:10), <anonymous>:16:1)
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/enhanced-resolve/lib/Resolver.js:718:5
+      at eval (eval at create (/home/kavia/workspace/code-generation/chessmaster  -pro-103555-12609d90/chess_master_frontend/node_modules/tapable/lib/HookCodeFa  ctory.js:33:10), <anonymous>:15:1)
+      at /home/kavia/workspace/code-generation/chessmaster-pro-103555-12609d90/c  hess_master_frontend/node_modules/enhanced-resolve/lib/DirectoryExistsPlugin.j  s:41:15
+      at process.processTicksAndRejections (node:internal/process/task_queues:81  :21)
+  
+  - Compilation.js:2123 
+    [chess_master_frontend]/[webpack]/lib/Compilation.js:2123:28
+  
+  - NormalModuleFactory.js:923 
+    [chess_master_frontend]/[webpack]/lib/NormalModuleFactory.js:923:13
+  
+  
+  - NormalModuleFactory.js:339 
+    [chess_master_frontend]/[webpack]/lib/NormalModuleFactory.js:339:22
+  
+  
+  - NormalModuleFactory.js:520 
+    [chess_master_frontend]/[webpack]/lib/NormalModuleFactory.js:520:22
+  
+  - NormalModuleFactory.js:151 
+    [chess_master_frontend]/[webpack]/lib/NormalModuleFactory.js:151:10
+  
+  - NormalModuleFactory.js:783 
+    [chess_master_frontend]/[webpack]/lib/NormalModuleFactory.js:783:25
+  
+  - NormalModuleFactory.js:1008 
+    [chess_master_frontend]/[webpack]/lib/NormalModuleFactory.js:1008:8
+  
+  - NormalModuleFactory.js:1137 
+    [chess_master_frontend]/[webpack]/lib/NormalModuleFactory.js:1137:5
+  
+  - async.js:6883 
+    [chess_master_frontend]/[neo-async]/async.js:6883:13
+  
+  - NormalModuleFactory.js:1120 
+    [chess_master_frontend]/[webpack]/lib/NormalModuleFactory.js:1120:45
+  
+  - Resolver.js:567 finishWithoutResolve
+    [chess_master_frontend]/[enhanced-resolve]/lib/Resolver.js:567:11
+  
+  - Resolver.js:656 
+    [chess_master_frontend]/[enhanced-resolve]/lib/Resolver.js:656:15
+  
+  - Resolver.js:718 
+    [chess_master_frontend]/[enhanced-resolve]/lib/Resolver.js:718:5
+  
+  
+  - Resolver.js:718 
+    [chess_master_frontend]/[enhanced-resolve]/lib/Resolver.js:718:5
+  
+  
+  - Resolver.js:718 
+    [chess_master_frontend]/[enhanced-resolve]/lib/Resolver.js:718:5
+  
+  
+  - Resolver.js:718 
+    [chess_master_frontend]/[enhanced-resolve]/lib/Resolver.js:718:5
+  
+  
+  - Resolver.js:718 
+    [chess_master_frontend]/[enhanced-resolve]/lib/Resolver.js:718:5
+  
+  
+  - Resolver.js:718 
+    [chess_master_frontend]/[enhanced-resolve]/lib/Resolver.js:718:5
+  
+  
+  - Resolver.js:718 
+    [chess_master_frontend]/[enhanced-resolve]/lib/Resolver.js:718:5
+  
+  
+  - Resolver.js:718 
+    [chess_master_frontend]/[enhanced-resolve]/lib/Resolver.js:718:5
+  
+  
+  - DirectoryExistsPlugin.js:41 
+    [chess_master_frontend]/[enhanced-resolve]/lib/DirectoryExistsPlugin.js:41:1    5
+  
+  - task_queues:81 process.processTicksAndRejections
+    node:internal/process/task_queues:81:21
+  
+  - child-compiler.js:211 
+    [chess_master_frontend]/[html-webpack-plugin]/lib/child-compiler.js:211:18
+  
+  - Compiler.js:629 finalCallback
+    [chess_master_frontend]/[webpack]/lib/Compiler.js:629:5
+  
+  - Compiler.js:664 
+    [chess_master_frontend]/[webpack]/lib/Compiler.js:664:11
+  
+  - Compiler.js:1350 
+    [chess_master_frontend]/[webpack]/lib/Compiler.js:1350:17
+  
+  
+  - Hook.js:18 Hook.CALL_ASYNC_DELEGATE [as _callAsync]
+    [chess_master_frontend]/[tapable]/lib/Hook.js:18:14
+  
+  - Compiler.js:1346 
+    [chess_master_frontend]/[webpack]/lib/Compiler.js:1346:33
+  
+  - Compilation.js:2938 finalCallback
+    [chess_master_frontend]/[webpack]/lib/Compilation.js:2938:11
+  
+  - Compilation.js:3251 
+    [chess_master_frontend]/[webpack]/lib/Compilation.js:3251:11
+  
+  
+  - Hook.js:18 Hook.CALL_ASYNC_DELEGATE [as _callAsync]
+    [chess_master_frontend]/[tapable]/lib/Hook.js:18:14
+  
+  - Compilation.js:3244 
+    [chess_master_frontend]/[webpack]/lib/Compilation.js:3244:38
+  
+  
+  - Compilation.js:540 
+    [chess_master_frontend]/[webpack]/lib/Compilation.js:540:10
+  
+  - SourceMapDevToolPlugin.js:607 
+    [chess_master_frontend]/[webpack]/lib/SourceMapDevToolPlugin.js:607:10
+  
+  - async.js:2830 
+    [chess_master_frontend]/[neo-async]/async.js:2830:7
+  
+  - async.js:2857 Object.each
+    [chess_master_frontend]/[neo-async]/async.js:2857:9
+  
+  - SourceMapDevToolPlugin.js:423 
+    [chess_master_frontend]/[webpack]/lib/SourceMapDevToolPlugin.js:423:17
+  
+  - async.js:2830 
+    [chess_master_frontend]/[neo-async]/async.js:2830:7
+
+1 ERROR in child compilations (Use 'stats.children: true' resp. '--stats-children' for more details)
+webpack compiled with 3 errors
