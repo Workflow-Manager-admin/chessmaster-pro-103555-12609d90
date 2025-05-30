@@ -783,13 +783,45 @@ export default function ChessMasterPro() {
   }
   function handleRedo() {
     if (redoStack.length === 0) return;
-    const move = redoStack[0];
-    const updatedHistory = [...history, move];
-    setHistory(updatedHistory);
-    setRedoStack(redoStack.slice(1));
-    setBoard(reconstructBoardFromHistory(updatedHistory));
-    // Set the turn to the opposite of the last moved piece's color
-    setTurn(colorOf(move.piece) === 'w' ? 'b' : 'w');
+    
+    // In hvai mode, handle redo appropriately for player/AI turns
+    const shouldRedoTwice = mode === 'hvai' && redoStack.length > 1;
+    
+    if (shouldRedoTwice) {
+      // Redo player's move and AI's response together
+      const move1 = redoStack[0];
+      const move2 = redoStack[1];
+      const updatedHistory = [...history, move1, move2];
+      setHistory(updatedHistory);
+      setRedoStack(redoStack.slice(2));
+      setBoard(reconstructBoardFromHistory(updatedHistory));
+      
+      // After AI's move, it should be player's turn again
+      // Set turn to opposite of the last redone piece's color
+      setTurn(colorOf(move2.piece) === 'w' ? 'b' : 'w');
+    } else {
+      // Standard single move redo
+      const move = redoStack[0];
+      const updatedHistory = [...history, move];
+      setHistory(updatedHistory);
+      setRedoStack(redoStack.slice(1));
+      setBoard(reconstructBoardFromHistory(updatedHistory));
+      
+      // Set the turn to the opposite of the last moved piece's color
+      setTurn(colorOf(move.piece) === 'w' ? 'b' : 'w');
+      
+      // If in AI mode and it becomes AI's turn after redo, trigger AI move
+      if (mode === 'hvai') {
+        const nextTurn = colorOf(move.piece) === 'w' ? 'b' : 'w';
+        const aiColor = flipped ? 'w' : 'b';
+        
+        if (nextTurn === aiColor && !redoStack.length) {
+          // Schedule AI move after state update
+          setTimeout(aiMove, 200);
+        }
+      }
+    }
+    
     setActive(null);
   }
   // Reconstructs the board from move history
