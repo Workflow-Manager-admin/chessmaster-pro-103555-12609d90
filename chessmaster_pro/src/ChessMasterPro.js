@@ -259,6 +259,168 @@ function minimax(board, depth, isMaximizing, aiColor, state, alpha, beta) {
   return [bestEval, bestMove];
 }
 
+/* --- ChessPieceSVG: Renders a SVG chess piece icon with outlined cartoonish style --- */
+function ChessPieceSVG({ piece }) {
+  if (!piece) return null;
+  const color = piece === piece.toUpperCase() ? 'w' : 'b';
+  const type = piece.toUpperCase();
+
+  // style guide variables
+  const outline = 'var(--piece-outline)';
+  const whiteFill = 'var(--piece-white-fill)';
+  const blackFill = 'var(--piece-black-fill)';
+  const size = 44; // SVG viewBox size (pixels)
+  const padding = 6; // padding to allow for outline and margin (centers at ~80%)
+
+  // Sets piece path, fill and stroke for each piece type
+  // All SVGs carefully designed to be cartoonish/outline and 2D, per design
+  switch (type) {
+    case 'P': // Pawn
+      return (
+        <svg viewBox="0 0 44 44" width="80%" height="80%" style={{display:"block"}}
+          aria-label={color === "w" ? "White pawn" : "Black pawn"}>
+          {color === 'w' ? (
+            <>
+              <circle cx="22" cy="12.5" r="7.5" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <rect x="16.2" y="26.5" width="11.6" height="8.6" rx="4.2" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <ellipse cx="22" cy="22" rx="10" ry="7.5" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <ellipse cx="22" cy="38" rx="7.8" ry="3.2" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <ellipse cx="22" cy="32" rx="9.4" ry="3.2" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+            </>
+          ) : (
+            <>
+              <circle cx="22" cy="12.5" r="7.5" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <rect x="16.2" y="26.5" width="11.6" height="8.6" rx="4.2" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <ellipse cx="22" cy="22" rx="10" ry="7.5" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <ellipse cx="22" cy="38" rx="7.8" ry="3.2" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <ellipse cx="22" cy="32" rx="9.4" ry="3.2" fill={blackFill} stroke={outline} strokeWidth="2"/>
+            </>
+          )}
+        </svg>
+      );
+    case 'N': // Knight
+      return (
+        <svg viewBox="0 0 44 44" width="80%" height="80%" style={{display:"block"}}
+          aria-label={color === "w" ? "White knight" : "Black knight"}>
+          {color === 'w' ? (
+            <>
+              <ellipse cx="22" cy="38" rx="9" ry="3.3" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <path d="M12,35 Q14,25 20,25 Q16,17 20,12 Q31,2 31,17 Q34,11 37,7 Q33,21 25,25 Q32,27 33,35 Z"
+                fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <circle cx="27" cy="18" r="1.3" fill={outline}/>
+            </>
+          ) : (
+            <>
+              <ellipse cx="22" cy="38" rx="9" ry="3.3" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <path d="M12,35 Q14,25 20,25 Q16,17 20,12 Q31,2 31,17 Q34,11 37,7 Q33,21 25,25 Q32,27 33,35 Z"
+                fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <circle cx="27" cy="18" r="1.3" fill={whiteFill}/>
+            </>
+          )}
+        </svg>
+      );
+    case 'B': // Bishop
+      return (
+        <svg viewBox="0 0 44 44" width="80%" height="80%" style={{display:"block"}}
+          aria-label={color === "w" ? "White bishop" : "Black bishop"}>
+          {color === 'w' ? (
+            <>
+              <ellipse cx="22" cy="38" rx="8.5" ry="2.8" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <ellipse cx="22" cy="16" rx="6.2" ry="9.5" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <ellipse cx="22" cy="24" rx="9.5" ry="8.2" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <rect x="18" y="30.5" width="8" height="4" rx="2" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <line x1="22" y1="6" x2="22" y2="13.5" stroke={outline} strokeWidth="2"/>
+              <circle cx="22" cy="6" r="2.1" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+            </>
+          ) : (
+            <>
+              <ellipse cx="22" cy="38" rx="8.5" ry="2.8" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <ellipse cx="22" cy="16" rx="6.2" ry="9.5" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <ellipse cx="22" cy="24" rx="9.5" ry="8.2" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <rect x="18" y="30.5" width="8" height="4" rx="2" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <line x1="22" y1="6" x2="22" y2="13.5" stroke={outline} strokeWidth="2"/>
+              <circle cx="22" cy="6" r="2.1" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+            </>
+          )}
+        </svg>
+      );
+    case 'R': // Rook
+      return (
+        <svg viewBox="0 0 44 44" width="80%" height="80%" style={{display:"block"}}
+          aria-label={color === "w" ? "White rook" : "Black rook"}>
+          {color === 'w' ? (
+            <>
+              <rect x="10" y="31" width="24" height="8" rx="2" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <rect x="14" y="13" width="16" height="18" rx="3" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <rect x="10" y="9" width="4" height="9" rx="1" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <rect x="30" y="9" width="4" height="9" rx="1" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <rect x="18" y="7" width="8" height="6" rx="1.5" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+            </>
+          ) : (
+            <>
+              <rect x="10" y="31" width="24" height="8" rx="2" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <rect x="14" y="13" width="16" height="18" rx="3" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <rect x="10" y="9" width="4" height="9" rx="1" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <rect x="30" y="9" width="4" height="9" rx="1" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <rect x="18" y="7" width="8" height="6" rx="1.5" fill={blackFill} stroke={outline} strokeWidth="2"/>
+            </>
+          )}
+        </svg>
+      );
+    case 'Q': // Queen
+      return (
+        <svg viewBox="0 0 44 44" width="80%" height="80%" style={{display:"block"}}
+          aria-label={color === "w" ? "White queen" : "Black queen"}>
+          {color === 'w' ? (
+            <>
+              <ellipse cx="22" cy="38" rx="10" ry="3.7" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <ellipse cx="22" cy="28" rx="11.7" ry="7" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <circle cx="11" cy="12" r="3.4" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <circle cx="22" cy="8.7" r="3.4" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <circle cx="33" cy="12" r="3.4" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <path d="M11,29 Q16,19 22,19 Q28,19 33,29" fill="none" stroke={outline} strokeWidth="2"/>
+            </>
+          ) : (
+            <>
+              <ellipse cx="22" cy="38" rx="10" ry="3.7" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <ellipse cx="22" cy="28" rx="11.7" ry="7" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <circle cx="11" cy="12" r="3.4" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <circle cx="22" cy="8.7" r="3.4" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <circle cx="33" cy="12" r="3.4" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <path d="M11,29 Q16,19 22,19 Q28,19 33,29" fill="none" stroke={outline} strokeWidth="2"/>
+            </>
+          )}
+        </svg>
+      );
+    case 'K': // King
+      return (
+        <svg viewBox="0 0 44 44" width="80%" height="80%" style={{display:"block"}}
+          aria-label={color === "w" ? "White king" : "Black king"}>
+          {color === 'w' ? (
+            <>
+              <ellipse cx="22" cy="38" rx="9.5" ry="3.5" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <rect x="13" y="30" width="18" height="9" rx="4" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <rect x="17.7" y="19.5" width="8.6" height="13" rx="3" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <rect x="16" y="7" width="12" height="7.8" rx="4" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+              <line x1="22" y1="7" x2="22" y2="2.5" stroke={outline} strokeWidth="2"/>
+              <rect x="20.2" y="2" width="3.5" height="6" rx="1" fill={whiteFill} stroke={outline} strokeWidth="2"/>
+            </>
+          ) : (
+            <>
+              <ellipse cx="22" cy="38" rx="9.5" ry="3.5" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <rect x="13" y="30" width="18" height="9" rx="4" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <rect x="17.7" y="19.5" width="8.6" height="13" rx="3" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <rect x="16" y="7" width="12" height="7.8" rx="4" fill={blackFill} stroke={outline} strokeWidth="2"/>
+              <line x1="22" y1="7" x2="22" y2="2.5" stroke={outline} strokeWidth="2"/>
+              <rect x="20.2" y="2" width="3.5" height="6" rx="1" fill={blackFill} stroke={outline} strokeWidth="2"/>
+            </>
+          )}
+        </svg>
+      );
+    default: return null;
+  }
+}
+
 // ========== ChessBoard UI ==========
 
 function ChessBoard({
@@ -269,69 +431,43 @@ function ChessBoard({
   lastMoveSquares,
   flipped
 }) {
+  // Flat, responsive chessboard replicating design: no square gaps, flush edge-to-edge, alternating color, SVG pieces.
   return (
-    <div
-      className="cb-board"
-      style={{
-        display: 'grid',
-        gridTemplateRows: 'repeat(8, minmax(36px, 1fr))',
-        gridTemplateColumns: 'repeat(8, minmax(36px, 1fr))',
-        border: `4px solid ${COLOR_PRIMARY}`,
-        borderRadius: '6px',
-        boxSizing: 'border-box',
-        background: COLOR_PRIMARY,
-        maxWidth: '85vw',
-        aspectRatio: 1/1,
-        width: 'min(480px, 90vw)',
-        margin: 'auto'
-      }}
-    >
-      {Array(8).fill(0).map((_, i) =>
-        Array(8).fill(0).map((_, j) => {
-          const [row, col] = flipped ? [7-i,7-j] : [i,j];
-          const isLight = (row + col) % 2 === 0;
-          const isActive = activeSquare && activeSquare[0] === row && activeSquare[1] === col;
-          const isLegal = legalMoves?.some(([r, c]) => r === row && c === col);
-          const isLastMove = lastMoveSquares?.some(([r, c]) => r === row && c === col);
-          return (
-            <button
-              key={row + '-' + col}
-              className="cb-square"
-              onClick={() => onSquareClick(row, col)}
-              style={{
-                backgroundColor: isActive ? '#FFD970'
-                  : isLastMove ? '#aaddff'
-                  : isLegal ? '#d4edc9'
-                  : isLight ? LIGHT_SQUARE : DARK_SQUARE,
-                border: '0.5px solid #444',
-                outline: isActive ? '2.5px solid #E87A41' : '',
-                position: 'relative',
-                fontSize: 'min(2.3vw, 2.5rem)',
-                fontWeight: 600,
-                color: isLight ? COLOR_PRIMARY : '#fff',
-                padding: 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                userSelect: 'none',
-                cursor: 'pointer',
-                transition: 'background .16s'
-              }}
-              tabIndex={0}
-            >
-              <span>{board[row][col] ? PIECE_UNICODE[getVisualPiece(board[row][col])] : ""}</span>
-              {isLegal && <span style={{
-                position:'absolute',
-                left: '50%',
-                top: '50%',
-                transform: 'translate(-50%, -50%)',
-                fontSize: '1.3rem',
-                opacity: 0.30
-              }}>•</span>}
-            </button>
-          );
-        })
-      )}
+    <div className="cb-board">
+      {Array(8)
+        .fill(0)
+        .map((_, i) =>
+          Array(8)
+            .fill(0)
+            .map((_, j) => {
+              const [row, col] = flipped ? [7 - i, 7 - j] : [i, j];
+              const isLight = (row + col) % 2 === 0;
+
+              // No highlights, selection, lastmove, etc. per visual spec.
+              return (
+                <button
+                  key={row + '-' + col}
+                  className={`cb-square ${isLight ? 'cb-light' : 'cb-dark'}`}
+                  style={{}}
+                  tabIndex={-1}
+                  onClick={() => onSquareClick(row, col)}
+                  aria-label={`Chess square ${row},${col}`}
+                >
+                  <span style={{
+                    width: '100%',
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    {board[row][col] ? (
+                      <ChessPieceSVG piece={getVisualPiece(board[row][col])} />
+                    ) : null}
+                  </span>
+                </button>
+              );
+            })
+        )}
     </div>
   );
 }
@@ -414,21 +550,28 @@ function ChessClock({ time, running, onTimeout }) {
 
 function CapturedPieces({ captured }) {
   // captured: Array of piece codes
-  // Show white/black pieces in a row with Unicode icons, grouped/sorted.
+  // Show as row of small SVGs/cartoon icons, grouped/sorted.
   const grouped = captured.reduce((acc, p) => {
     acc[p] = (acc[p]||0)+1; return acc;
   }, {});
   return (
-    <div style={{padding:'5px 0', minHeight:'2.3em', fontSize:'1.2rem'}}>
+    <div style={{
+      padding:'5px 0', minHeight:'2.5em',
+      fontSize:'0.97rem', display:'flex', flexWrap:'wrap', gap:'5px'
+    }}>
       {Object.entries(grouped)
         .sort((a, b) => (b[1] - a[1]) || (a[0].localeCompare(b[0])))
-        .map(([p, cnt]) => {
-          return (
-            <span key={p} style={{marginRight:7, opacity:0.8}}>
-              {PIECE_UNICODE[p]}{cnt > 1 ? `×${cnt}` : ''}
-            </span>
-          );
-        })}
+        .map(([p, cnt]) => (
+          <span key={p} style={{marginRight:6, opacity:0.83, display:'flex', alignItems:'center', minWidth:24}}>
+            <ChessPieceSVG piece={getVisualPiece(p)} />
+            {cnt > 1 &&
+              <span style={{
+                fontWeight:700, marginLeft:2, fontSize:'0.99em', color:'var(--piece-outline)'
+              }}>
+                ×{cnt}
+              </span>}
+          </span>
+        ))}
     </div>
   );
 }
