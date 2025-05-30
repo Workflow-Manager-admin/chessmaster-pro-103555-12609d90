@@ -920,7 +920,7 @@ export default function ChessMasterPro() {
     
     setTimeout(()=> {
       const depth = aiDifficulty + 1;
-      const [score, move] = minimax(board, depth, true, aiColor, {castlingRights, enPassantTarget}, -Infinity, Infinity);
+      const [, move] = minimax(board, depth, true, aiColor, {castlingRights, enPassantTarget}, -Infinity, Infinity);
       if (!move) { setWinner('d'); return; }
       
       // Double check the piece being moved is actually of the AI's color
