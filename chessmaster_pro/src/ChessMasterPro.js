@@ -407,7 +407,7 @@ function CapturedPieces({ captured }) {
           {PIECE_UNICODE[p]}{cnt>1?`×${cnt}`:''}
         </span>
       )}
-    </div>;
+    </div>
   );
 }
 
