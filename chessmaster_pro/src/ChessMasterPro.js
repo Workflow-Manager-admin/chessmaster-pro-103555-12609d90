@@ -715,12 +715,32 @@ export default function ChessMasterPro() {
   function reconstructBoardFromHistory(h) {
     let b = initialBoard();
     for (const mv of h) {
-      // It's a simplified approach, for MVP only
       const piece = mv.piece;
       const [fr, fc] = mv.from, [tr, tc]=mv.to;
       b = cloneBoard(b);
-      b[tr][tc] = piece;
+      
+      // Handle special case for promotion
+      if (piece.toUpperCase() === 'P' && (tr === 0 || tr === 7)) {
+        // Promote to queen like in handleMovePiece
+        b[tr][tc] = (colorOf(piece) === 'w') ? 'Q' : 'q';
+      } else {
+        // Use the original piece for normal moves
+        b[tr][tc] = piece;
+      }
+      
       b[fr][fc] = '';
+      
+      // Handle castling
+      if (piece.toUpperCase() === 'K' && Math.abs(tc-fc) === 2) {
+        // Castling move - also move the rook
+        if (tc > fc) { // king side
+          b[tr][5] = b[tr][7]; 
+          b[tr][7] = '';
+        } else { // queen side
+          b[tr][3] = b[tr][0]; 
+          b[tr][0] = '';
+        }
+      }
     }
     return b;
   }
