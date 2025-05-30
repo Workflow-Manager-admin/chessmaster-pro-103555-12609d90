@@ -796,6 +796,13 @@ export default function ChessMasterPro() {
     setActive(null);
   }
 
+  // Helper function to determine if it's the human player's turn
+  function isPlayerTurn() {
+    // In hvai mode with normal board: player is white (turn === 'w')
+    // In hvai mode with flipped board: player is black (turn === 'b')
+    return (mode === 'hvai' && ((turn === 'w' && !flipped) || (turn === 'b' && flipped)));
+  }
+  
   // Has any legal move left?
   function hasAnyLegalMove(board, color, state) {
     for (let r=0;r<8;++r) for (let c=0;c<8;++c) {
@@ -809,11 +816,25 @@ export default function ChessMasterPro() {
   // AI move (async so UI feels responsive)
   async function aiMove() {
     if (winner) return;
+    
+    // Determine AI's color based on board orientation
+    const aiColor = flipped ? 'w' : 'b';
+    
+    // Only make moves if it's the AI's turn
+    if (turn !== aiColor) return;
+    
     setTimeout(()=> {
       const depth = aiDifficulty + 1;
-      const [score, move] = minimax(board, depth, true, turn, {castlingRights, enPassantTarget}, -Infinity, Infinity);
+      const [score, move] = minimax(board, depth, true, aiColor, {castlingRights, enPassantTarget}, -Infinity, Infinity);
       if (!move) { setWinner('d'); return; }
-      handleMovePiece(move.from, move.to);
+      
+      // Double check the piece being moved is actually of the AI's color
+      const piece = board[move.from[0]][move.from[1]];
+      if (piece && colorOf(piece) === aiColor) {
+        handleMovePiece(move.from, move.to);
+      } else {
+        console.error("AI attempted to move opponent's piece:", move);
+      }
     }, 100);
   }
 
