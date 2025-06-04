@@ -1106,14 +1106,19 @@ export default function ChessMasterPro() {
       }}>
         {/* Board + Status */}
         <div style={{display:'flex', flexDirection:'column', alignItems:'center', width:'min(490px, 97vw)'}}>
-          <ChessBoard
-            board={board}
-            activeSquare={active}
-            legalMoves={legalMoves}
-            onSquareClick={handleSquareClick}
-            lastMoveSquares={lastMove}
-            flipped={flipped}
-          />
+          <DndProvider backend={HTML5Backend}>
+            <ChessBoard
+              board={board}
+              activeSquare={active}
+              legalMoves={legalMoves}
+              onSquareClick={handleSquareClick}
+              onPieceDrop={handleMovePiece}
+              lastMoveSquares={lastMove}
+              flipped={flipped}
+              threatenedPieces={threatenedPieces}
+              cellsUnderAttack={cellsUnderAttack}
+            />
+          </DndProvider>
 
           <GameStatus status={status} turn={turn} isCheck={isCheck} winner={winner} />
 
