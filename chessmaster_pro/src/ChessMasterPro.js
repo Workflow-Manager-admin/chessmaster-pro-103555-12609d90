@@ -876,6 +876,31 @@ function UndoRedoBar({ canUndo, canRedo, onUndo, onRedo }) {
   );
 }
 
+// ========== Game Controls ==========
+
+function StartGameButton({ onClick, gameStarted }) {
+  return (
+    <button 
+      className="btn" 
+      style={{
+        background: '#4CAF50', 
+        color: 'white',
+        padding: '10px 20px',
+        fontWeight: 'bold',
+        fontSize: '1.1rem',
+        borderRadius: '4px',
+        cursor: 'pointer',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+        display: gameStarted ? 'none' : 'block',
+        margin: '10px auto'
+      }} 
+      onClick={onClick}
+    >
+      Start Game
+    </button>
+  );
+}
+
 // ========== Game Mode Selector / Restart ==========
 
 function GameControls({ mode, setMode, onRestart, flipped, setFlipped }) {
