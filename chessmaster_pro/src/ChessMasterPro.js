@@ -1103,7 +1103,31 @@ export default function ChessMasterPro() {
     const piece = board[fr][fc];
     const target = board[tr][tc];
 
-    // TODO: Check legality for special moves: castling, en passant, promotion
+    // Check for king capture (immediate win)
+    if (target && target.toUpperCase() === 'K') {
+      const newBoard = cloneBoard(board);
+      newBoard[tr][tc] = piece;
+      newBoard[fr][fc] = '';
+      
+      // Append move to history with checkmate symbol
+      const notation = pieceNotation(from, to, piece, target) + '#';
+      setHistory(h => h.concat([{from, to, piece, capture:target, notation}]));
+      setLastMove([from, to]);
+      
+      // Update captured pieces
+      setCaptured(cap => ({
+        ...cap,
+        [turn]: cap[turn].concat(target)
+      }));
+      
+      // Set new board state
+      setBoard(newBoard);
+      
+      // Declare winner (the current player captured the opponent's king)
+      setWinner(turn);
+      setClockRunning({w: false, b: false});
+      return;
+    }
 
     const newBoard = cloneBoard(board);
     // Promotion
@@ -1147,8 +1171,30 @@ export default function ChessMasterPro() {
       if (fr===0&&fc===7) newCastlingRights['b'].K = false;
     }
 
+    // Check for check/checkmate and update notation accordingly
+    const nextTurn = opposite(turn);
+    let notation = pieceNotation(from, to, piece, target);
+    
+    // Apply the move first to check if it results in check for the opponent
+    const isNextTurnInCheck = isKingInCheck(newBoard, nextTurn);
+    
+    // Then check if the opponent has any legal moves
+    const nextTurnHasLegalMoves = hasAnyLegalMove(
+      newBoard, 
+      nextTurn, 
+      {castlingRights: newCastlingRights, enPassantTarget: newEnPassant}
+    );
+    
+    // Add appropriate notation symbols
+    if (isNextTurnInCheck) {
+      if (!nextTurnHasLegalMoves) {
+        notation += '#'; // Checkmate
+      } else {
+        notation += '+'; // Check
+      }
+    }
+
     // Append move to history
-    const notation = pieceNotation(from, to, piece, target);
     setHistory(h=> h.concat([{from, to, piece, capture:target, notation}]));
     setLastMove([from, to]);
 
@@ -1168,7 +1214,7 @@ export default function ChessMasterPro() {
     setRedoStack([]);
 
     setBoard(newBoard);
-    setTurn(t=>opposite(t));
+    setTurn(nextTurn);
     setCastlingRights(newCastlingRights);
     setEnPassantTarget(newEnPassant);
   }
