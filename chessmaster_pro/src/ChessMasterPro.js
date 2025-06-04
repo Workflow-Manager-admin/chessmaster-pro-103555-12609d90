@@ -957,7 +957,7 @@ export default function ChessMasterPro() {
   const [mode, setMode] = useState('hvai'); // 'hvh', 'hvai'
   const [aiDifficulty, setAiDifficulty] = useState(2);
   const [clocks, setClocks] = useState({w:5*60*1000, b:5*60*1000}); // ms
-  const [clockRunning, setClockRunning] = useState({w:true, b:false});
+  const [clockRunning, setClockRunning] = useState({w:false, b:false}); // No clocks running initially
   const [captured, setCaptured] = useState({w:[], b:[]});
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
@@ -968,6 +968,7 @@ export default function ChessMasterPro() {
   const [flipped, setFlipped] = useState(false);
   const [threatenedPieces, setThreatenedPieces] = useState([]);
   const [cellsUnderAttack, setCellsUnderAttack] = useState([]);
+  const [gameStarted, setGameStarted] = useState(false); // Track if game has started
 
   // Advanced features: Castling/en passant state - for production-grade engine should have a full FEN parser.
   const [castlingRights, setCastlingRights] = useState({
