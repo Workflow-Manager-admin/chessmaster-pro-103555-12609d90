@@ -760,6 +760,54 @@ function GameControls({ mode, setMode, onRestart, flipped, setFlipped }) {
 // ========== Main ChessMasterPro Container ==========
 
 // PUBLIC_INTERFACE
+// Find all cells under attack by a given color
+function findCellsUnderAttack(board, attackingColor, state) {
+  const cellsAttacked = [];
+  
+  // Loop through every piece of the attacking color
+  for (let r=0; r<8; ++r) {
+    for (let c=0; c<8; ++c) {
+      if (board[r][c] && colorOf(board[r][c]) === attackingColor) {
+        // Get all legal moves for this piece
+        const pieceMoves = getLegalMoves(board, r, c, state);
+        
+        // Add all these moves to the cells under attack
+        for (const move of pieceMoves) {
+          const [moveRow, moveCol] = move;
+          // Check if this cell is already in the list
+          if (!cellsAttacked.some(([row, col]) => row === moveRow && col === moveCol)) {
+            cellsAttacked.push([moveRow, moveCol]);
+          }
+        }
+      }
+    }
+  }
+  
+  return cellsAttacked;
+}
+
+// Find all pieces that are threatened (can be captured)
+function findThreatenedPieces(board, defendingColor, state) {
+  const threatened = [];
+  const attackingColor = opposite(defendingColor);
+  
+  // Find all cells under attack by the attacking color
+  const underAttack = findCellsUnderAttack(board, attackingColor, state);
+  
+  // Check if any of the defending pieces are in those cells
+  for (let r=0; r<8; ++r) {
+    for (let c=0; c<8; ++c) {
+      if (board[r][c] && colorOf(board[r][c]) === defendingColor) {
+        if (underAttack.some(([row, col]) => row === r && col === c)) {
+          threatened.push([r, c]);
+        }
+      }
+    }
+  }
+  
+  return threatened;
+}
+
 export default function ChessMasterPro() {
   // State: position, turn, clocks, move history, captured, settings, timers etc.
   const [board, setBoard] = useState(initialBoard());
