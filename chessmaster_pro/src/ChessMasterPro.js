@@ -1198,10 +1198,11 @@ export default function ChessMasterPro() {
     setHistory(h=> h.concat([{from, to, piece, capture:target, notation}]));
     setLastMove([from, to]);
 
-    // Clocks
-    setClockRunning(runs => ({
-      w: !runs.w, b: !runs.b
-    }));
+    // Clocks - Properly toggle the clocks based on whose turn it is next
+    setClockRunning({
+      w: nextTurn === 'w',
+      b: nextTurn === 'b'
+    });
 
     // Captured
     if (target) {
@@ -1326,7 +1327,11 @@ export default function ChessMasterPro() {
   // Start game
   function handleStartGame() {
     setGameStarted(true);
-    setClockRunning({w:true, b:false});
+    // Start the clock for the current player (white starts first)
+    setClockRunning({
+      w: turn === 'w',
+      b: turn === 'b'
+    });
   }
 
   // --- Layout & Rendering ---
