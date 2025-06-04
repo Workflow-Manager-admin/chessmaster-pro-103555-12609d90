@@ -555,22 +555,96 @@ function countPieces(board) {
 function minimax(board, depth, isMaximizing, aiColor, state, alpha, beta) {
   if (depth === 0)
     return [evaluate(board, aiColor), null];
-  // Find all possible moves for this color
+  
+  // Find all possible legal moves for this color
+  const currentColor = isMaximizing ? aiColor : opposite(aiColor);
   let moves = [];
-  for (let r=0;r<8;++r)
-    for (let c=0;c<8;++c)
-      if (board[r][c] && colorOf(board[r][c])=== (isMaximizing ? aiColor : opposite(aiColor))) {
-        const thisMoves = getLegalMoves(board, r, c, state);
-        moves.push(...thisMoves.map(([tr,tc])=>({from:[r,c],to:[tr,tc]})));
+  for (let r = 0; r < 8; ++r) {
+    for (let c = 0; c < 8; ++c) {
+      if (board[r][c] && colorOf(board[r][c]) === currentColor) {
+        const legalMoves = getLegalMoves(board, r, c, state);
+        moves.push(...legalMoves.map(([tr, tc]) => ({from: [r, c], to: [tr, tc]})));
       }
-  if (moves.length === 0) return [evaluate(board, aiColor), null];
-  let bestMove = null, bestEval = isMaximizing ? -Infinity : Infinity;
+    }
+  }
+  
+  // If no legal moves, it's either checkmate or stalemate
+  if (moves.length === 0) {
+    if (isKingInCheck(board, currentColor)) {
+      // Checkmate - return a very bad score for the losing side
+      return [isMaximizing ? -999999 : 999999, null];
+    } else {
+      // Stalemate - return neutral score
+      return [0, null];
+    }
+  }
+  
+  let bestMove = null;
+  let bestEval = isMaximizing ? -Infinity : Infinity;
+  
   for (const move of moves) {
     const newBoard = cloneBoard(board);
-    // Apply move
-    newBoard[move.to[0]][move.to[1]] = newBoard[move.from[0]][move.from[1]];
+    const piece = newBoard[move.from[0]][move.from[1]];
+    const target = newBoard[move.to[0]][move.to[1]];
+    
+    // Apply move with proper handling of special moves
+    newBoard[move.to[0]][move.to[1]] = piece;
     newBoard[move.from[0]][move.from[1]] = '';
-    const [score] = minimax(newBoard, depth-1, !isMaximizing, aiColor, state, alpha, beta);
+    
+    // Handle en passant
+    if (piece.toUpperCase() === 'P' && move.from[1] !== move.to[1] && !target) {
+      const captureRow = colorOf(piece) === 'w' ? move.to[0] + 1 : move.to[0] - 1;
+      newBoard[captureRow][move.to[1]] = '';
+    }
+    
+    // Handle castling
+    if (piece.toUpperCase() === 'K' && Math.abs(move.to[1] - move.from[1]) === 2) {
+      if (move.to[1] > move.from[1]) {
+        // King side castling
+        newBoard[move.to[0]][5] = newBoard[move.to[0]][7];
+        newBoard[move.to[0]][7] = '';
+      } else {
+        // Queen side castling
+        newBoard[move.to[0]][3] = newBoard[move.to[0]][0];
+        newBoard[move.to[0]][0] = '';
+      }
+    }
+    
+    // Handle pawn promotion (assume queen)
+    if (piece.toUpperCase() === 'P' && (move.to[0] === 0 || move.to[0] === 7)) {
+      newBoard[move.to[0]][move.to[1]] = colorOf(piece) === 'w' ? 'Q' : 'q';
+    }
+    
+    // Create new state for next level
+    const newState = {...state};
+    
+    // Update castling rights
+    if (piece.toUpperCase() === 'K') {
+      newState.castlingRights = {
+        ...newState.castlingRights,
+        [colorOf(piece)]: {K: false, Q: false}
+      };
+    }
+    if (piece.toUpperCase() === 'R') {
+      const color = colorOf(piece);
+      if (move.from[0] === (color === 'w' ? 7 : 0)) {
+        if (move.from[1] === 0) {
+          newState.castlingRights[color].Q = false;
+        } else if (move.from[1] === 7) {
+          newState.castlingRights[color].K = false;
+        }
+      }
+    }
+    
+    // Update en passant target
+    if (piece.toUpperCase() === 'P' && Math.abs(move.to[0] - move.from[0]) === 2) {
+      newState.enPassantTarget = posToAlg((move.to[0] + move.from[0]) / 2, move.to[1]);
+    } else {
+      newState.enPassantTarget = null;
+    }
+    
+    const [score] = minimax(newBoard, depth - 1, !isMaximizing, aiColor, newState, alpha, beta);
+    
     if (isMaximizing) {
       if (score > bestEval) {
         bestEval = score;
@@ -587,6 +661,7 @@ function minimax(board, depth, isMaximizing, aiColor, state, alpha, beta) {
       if (beta <= alpha) break;
     }
   }
+  
   return [bestEval, bestMove];
 }
 
@@ -1120,21 +1195,11 @@ function GameControls({ mode, setMode, onRestart, flipped, setFlipped }) {
 function findCellsUnderAttack(board, attackingColor, state) {
   const cellsAttacked = [];
   
-  // Loop through every piece of the attacking color
-  for (let r=0; r<8; ++r) {
-    for (let c=0; c<8; ++c) {
-      if (board[r][c] && colorOf(board[r][c]) === attackingColor) {
-        // Get all legal moves for this piece
-        const pieceMoves = getLegalMoves(board, r, c, state);
-        
-        // Add all these moves to the cells under attack
-        for (const move of pieceMoves) {
-          const [moveRow, moveCol] = move;
-          // Check if this cell is already in the list
-          if (!cellsAttacked.some(([row, col]) => row === moveRow && col === moveCol)) {
-            cellsAttacked.push([moveRow, moveCol]);
-          }
-        }
+  // Check each square on the board
+  for (let r = 0; r < 8; ++r) {
+    for (let c = 0; c < 8; ++c) {
+      if (isSquareAttacked(board, r, c, attackingColor)) {
+        cellsAttacked.push([r, c]);
       }
     }
   }
@@ -1518,9 +1583,14 @@ export default function ChessMasterPro() {
 
   // Has any legal move left?
   function hasAnyLegalMove(board, color, state) {
-    for (let r=0;r<8;++r) for (let c=0;c<8;++c) {
-      if (board[r][c] && colorOf(board[r][c]) === color) {
-        if (getLegalMoves(board, r, c, state).length) return true;
+    for (let r = 0; r < 8; ++r) {
+      for (let c = 0; c < 8; ++c) {
+        if (board[r][c] && colorOf(board[r][c]) === color) {
+          const legalMoves = getLegalMoves(board, r, c, state);
+          if (legalMoves.length > 0) {
+            return true;
+          }
+        }
       }
     }
     return false;
