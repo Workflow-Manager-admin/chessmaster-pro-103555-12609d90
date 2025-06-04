@@ -207,19 +207,157 @@ function stateDummyForCheck(board, color) {
 // ========== Minimax AI ==========
 
 function evaluate(board, aiColor) {
-  // Simple evaluation for illustration: material only.
-  // Values: pawn=100, knight=320, bishop=330, rook=500, queen=900
+  // Advanced evaluation considering material value, piece activity, development, and king safety
   let score = 0;
   const pieceValues = {p:100, n:320, b:330, r:500, q:900, k:0};
+  
+  // Center control bonus (more for central squares)
+  const centerControlBonus = [
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 5, 10, 10, 10, 10, 5, 0],
+    [0, 10, 20, 20, 20, 20, 10, 0],
+    [0, 10, 20, 40, 40, 20, 10, 0], 
+    [0, 10, 20, 40, 40, 20, 10, 0],
+    [0, 10, 20, 20, 20, 20, 10, 0],
+    [0, 5, 10, 10, 10, 10, 5, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0]
+  ];
+  
+  // Pawn advancement bonus
+  const pawnAdvanceBonus = [0, 0, 5, 10, 20, 35, 60, 0]; // indexed by rank
+  
+  // Track king positions for safety evaluation
+  let whiteKingPos = null;
+  let blackKingPos = null;
+  
+  // Count developed pieces (moved from starting position) for each color
+  let whiteDevelopedPieces = 0;
+  let blackDevelopedPieces = 0;
+  
+  // Process each piece on the board
   for (let r=0; r<8; ++r) {
     for (let c=0; c<8; ++c) {
       const piece = board[r][c];
       if (!piece) continue;
+      
+      // Base material value
       const val = pieceValues[piece.toLowerCase()] || 0;
-      score += (piece === piece.toUpperCase()) ? val : -val;
+      const isWhite = piece === piece.toUpperCase();
+      const baseScore = isWhite ? val : -val;
+      score += baseScore;
+      
+      // Track king positions
+      if (piece.toLowerCase() === 'k') {
+        if (isWhite) whiteKingPos = [r, c];
+        else blackKingPos = [r, c];
+      }
+      
+      // Add position/activity bonuses based on piece type
+      const pieceType = piece.toLowerCase();
+      const positionScore = isWhite ? centerControlBonus[r][c] : -centerControlBonus[7-r][c];
+      
+      // Piece-specific positional bonuses
+      switch (pieceType) {
+        case 'p': // Pawns
+          // Pawn advancement bonus (greater the further advanced)
+          const advanceScore = isWhite ? 
+            pawnAdvanceBonus[7-r] : 
+            pawnAdvanceBonus[r];
+          score += isWhite ? advanceScore : -advanceScore;
+          
+          // Check for pawn development from starting position
+          if ((isWhite && r !== 6) || (!isWhite && r !== 1)) {
+            isWhite ? whiteDevelopedPieces++ : blackDevelopedPieces++;
+          }
+          break;
+          
+        case 'n': // Knights
+          // Knights are better in the center
+          score += positionScore * 1.2; 
+          // Check for knight development
+          if ((isWhite && (r !== 7 || (c !== 1 && c !== 6))) || 
+              (!isWhite && (r !== 0 || (c !== 1 && c !== 6)))) {
+            isWhite ? whiteDevelopedPieces++ : blackDevelopedPieces++;
+          }
+          break;
+          
+        case 'b': // Bishops
+          // Bishops are better in the center and on diagonals
+          score += positionScore; 
+          // Penalty for undeveloped bishops
+          if ((isWhite && (r === 7 && (c === 2 || c === 5))) || 
+              (!isWhite && (r === 0 && (c === 2 || c === 5)))) {
+            score += isWhite ? -15 : 15;
+          } else {
+            isWhite ? whiteDevelopedPieces++ : blackDevelopedPieces++;
+          }
+          break;
+          
+        case 'r': // Rooks
+          // Bonus for rooks on open files (simplified check)
+          let openFile = true;
+          for (let rr = 0; rr < 8; rr++) {
+            if (rr !== r && board[rr][c] && board[rr][c].toLowerCase() === 'p') {
+              openFile = false;
+              break;
+            }
+          }
+          if (openFile) score += isWhite ? 15 : -15;
+          // Development bonus
+          if ((isWhite && r !== 7) || (!isWhite && r !== 0)) {
+            isWhite ? whiteDevelopedPieces++ : blackDevelopedPieces++;
+          }
+          break;
+          
+        case 'q': // Queen
+          // Queens are better in the center, but not too early
+          score += positionScore * 0.5;
+          // Development bonus
+          if ((isWhite && r !== 7) || (!isWhite && r !== 0)) {
+            isWhite ? whiteDevelopedPieces++ : blackDevelopedPieces++;
+          }
+          break;
+          
+        case 'k': // King
+          // Early game: king safety is important (stay back)
+          // Late game: king activity is important (move to center)
+          const piecesLeft = countPieces(board);
+          
+          if (piecesLeft > 24) { // Early/mid game - king safety
+            // Penalize king in the center in early game
+            score += isWhite ? -centerControlBonus[r][c] : centerControlBonus[7-r][c];
+            
+            // Bonus for king castled or in castling position
+            if (isWhite && r === 7 && (c === 1 || c === 6)) {
+              score += 30; // Bonus for castled white king
+            }
+            if (!isWhite && r === 0 && (c === 1 || c === 6)) {
+              score -= 30; // Bonus for castled black king
+            }
+          } else { // Late game - king activity
+            score += isWhite ? centerControlBonus[r][c] * 0.5 : -centerControlBonus[7-r][c] * 0.5;
+          }
+          break;
+      }
     }
   }
+  
+  // Add development bonus (encourages developing pieces in opening)
+  score += (whiteDevelopedPieces - blackDevelopedPieces) * 10;
+  
+  // Return final score from the perspective of the AI's color
   return (aiColor==='w'?1:-1) * score;
+}
+
+// Helper function to count total pieces on board
+function countPieces(board) {
+  let count = 0;
+  for (let r = 0; r < 8; r++) {
+    for (let c = 0; c < 8; c++) {
+      if (board[r][c]) count++;
+    }
+  }
+  return count;
 }
 
 // PUBLIC_INTERFACE
