@@ -1305,7 +1305,14 @@ export default function ChessMasterPro() {
     // For now, just replay all moves up to idx
     const h = history.slice(0, idx+1);
     setBoard(reconstructBoardFromHistory(h));
-    setTurn(((idx+1)%2)===0 ? 'w' : 'b');
+    
+    // Set the turn based on the move index
+    const newTurn = ((idx+1)%2)===0 ? 'w' : 'b';
+    setTurn(newTurn);
+    
+    // Pause clocks during history review
+    setClockRunning({w: false, b: false});
+    
     setActive(null);
   }
 
