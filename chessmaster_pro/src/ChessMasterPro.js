@@ -1352,6 +1352,8 @@ export default function ChessMasterPro() {
     setCastlingRights({w: {K: true, Q: true}, b: {K: true, Q: true}});
     setEnPassantTarget(null);
     setGameStarted(false);
+    setStatus('');
+    setIsCheck(false);
   }
   
   // Start game
