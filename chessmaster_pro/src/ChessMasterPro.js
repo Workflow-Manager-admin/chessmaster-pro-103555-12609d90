@@ -1054,7 +1054,7 @@ export default function ChessMasterPro() {
 
   // Handler: Chessboard click/tap/cell select
   function handleSquareClick(row, col) {
-    if (winner) return;
+    if (winner || !gameStarted) return;
     if (active) {
       // If clicking legal move, perform it
       if (legalMoves.some(([r,c])=>r===row&&c===col)) {
