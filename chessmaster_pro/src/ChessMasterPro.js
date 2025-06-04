@@ -1056,8 +1056,15 @@ export default function ChessMasterPro() {
     // Winner status
     const legalMoveExists = hasAnyLegalMove(board, turn, {castlingRights, enPassantTarget});
     if (!legalMoveExists) {
-      if (checks) setWinner(opposite(turn)); // checkmate!
-      else setWinner('d'); // draw (stalemate)
+      if (checks) {
+        setWinner(opposite(turn)); // checkmate!
+        setStatus('Checkmate');
+      } else {
+        setWinner('d'); // draw (stalemate)
+        setStatus('Stalemate');
+      }
+      // Stop all clocks when game ends
+      setClockRunning({w: false, b: false});
     }
     // else reset winner (game continues)
     else setWinner(null);
