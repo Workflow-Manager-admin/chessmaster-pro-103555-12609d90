@@ -743,25 +743,27 @@ function MoveHistoryLog({ history, selectedIndex, onSelectMove }) {
       margin: '0 0 18px 0',
       minWidth: 120,
       fontSize: '1.06rem',
-      maxHeight: '330px',
+      height: '200px', // Fixed height to prevent layout shifts
       overflowY: 'auto'
     }}>
       <strong>Moves</strong>
-      <ol style={{paddingLeft:18}}>
-        {history.map((move, idx) =>
-          <li
-            key={idx}
-            style={{
-              background: idx === selectedIndex ? '#aaddff35' : '',
-              borderRadius: '4px',
-              margin: 0,
-              cursor: 'pointer',
-              padding: '3px 0'
-            }}
-            onClick={() => onSelectMove(idx)}
-          >{move.notation}</li>
-        )}
-      </ol>
+      <div style={{ height: 'calc(100% - 24px)', overflowY: 'auto' }}>
+        <ol style={{paddingLeft:18, margin: '8px 0'}}>
+          {history.map((move, idx) =>
+            <li
+              key={idx}
+              style={{
+                background: idx === selectedIndex ? '#aaddff35' : '',
+                borderRadius: '4px',
+                margin: 0,
+                cursor: 'pointer',
+                padding: '3px 0'
+              }}
+              onClick={() => onSelectMove(idx)}
+            >{move.notation}</li>
+          )}
+        </ol>
+      </div>
     </div>
   )
 }
