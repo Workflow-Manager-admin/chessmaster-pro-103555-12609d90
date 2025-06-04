@@ -1002,13 +1002,13 @@ export default function ChessMasterPro() {
 
   // Decides if the AI should move
   useEffect(()=>{
-    if (winner || mode !== 'hvai') return;
+    if (winner || mode !== 'hvai' || !gameStarted) return;
     if ((turn === 'b' && !flipped) || (turn === 'w' && flipped) ) {
       // AI is black (normal), white if board flipped.
       aiMove();
     }
     // eslint-disable-next-line
-  }, [turn, mode, aiDifficulty, winner]);
+  }, [turn, mode, aiDifficulty, winner, gameStarted]);
 
   // Move generation on active square for legal
   useEffect(()=>{
