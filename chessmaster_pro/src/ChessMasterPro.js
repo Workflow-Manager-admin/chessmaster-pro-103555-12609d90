@@ -1241,8 +1241,20 @@ export default function ChessMasterPro() {
     setHistory(prev);
     // TODO: Also restore full state for all chess states (would keep snapshots or track full FEN history in prod)
     setBoard(prev.length===0 ? initialBoard() : reconstructBoardFromHistory(prev));
-    setTurn(t => opposite(t));
-    // Should probably restore clocks per-move in real implementation
+    
+    const newTurn = opposite(turn);
+    setTurn(newTurn);
+    
+    // Update clock state based on the new turn and if game is still active
+    if (gameStarted && !winner) {
+      setClockRunning({
+        w: newTurn === 'w',
+        b: newTurn === 'b'
+      });
+    } else {
+      setClockRunning({w: false, b: false});
+    }
+    
     // Remove captured
     if (last.capture) {
       setCaptured(cap => {
