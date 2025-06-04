@@ -1272,7 +1272,18 @@ export default function ChessMasterPro() {
     setHistory(hist => [...hist, move]);
     setRedoStack(redoStack.slice(1));
     setBoard(reconstructBoardFromHistory([...history, move]));
-    setTurn(t => opposite(t));
+    
+    const newTurn = opposite(turn);
+    setTurn(newTurn);
+    
+    // Update clock state based on the new turn and if game is still active
+    if (gameStarted && !winner) {
+      setClockRunning({
+        w: newTurn === 'w',
+        b: newTurn === 'b'
+      });
+    }
+    
     setActive(null);
   }
   // Reconstructs the board from move history
