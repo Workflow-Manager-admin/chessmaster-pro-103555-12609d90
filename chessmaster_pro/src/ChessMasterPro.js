@@ -1411,9 +1411,14 @@ export default function ChessMasterPro() {
 
       {/* Main Play Area */}
       <div style={{
-        display:'flex', flexDirection:'row', gap:24, width:'100%',
-        justifyContent: 'center', alignItems: 'flex-start',
-        flexWrap: 'wrap'
+        display:'flex', 
+        flexDirection:'row', 
+        gap:24, 
+        width:'100%',
+        maxWidth: '800px',
+        justifyContent: 'center', 
+        alignItems: 'flex-start',
+        margin: '0 auto'
       }}>
         {/* Board + Status */}
         <div style={{display:'flex', flexDirection:'column', alignItems:'center', width:'min(490px, 97vw)'}}>
@@ -1450,13 +1455,22 @@ export default function ChessMasterPro() {
 
         {/* Side bars: Move log & Captured */}
         <div style={{
-          minWidth: 160,
-          display:'flex', flexDirection:'column', alignItems:'stretch',
+          width: '200px', // Fixed width for consistent layout
+          flexShrink: 0, // Prevent shrinking
+          display:'flex', 
+          flexDirection:'column', 
+          alignItems:'stretch',
           gap:10
         }}>
           <MoveHistoryLog history={history} selectedIndex={-1} onSelectMove={handleSelectMove} />
           <div style={{
-            background:'#fff', borderRadius:8, padding:'8px',marginBottom:8, fontWeight:'bold'
+            background:'#fff', 
+            borderRadius:8, 
+            padding:'8px',
+            marginBottom:8, 
+            fontWeight:'bold',
+            height: '180px', // Fixed height for captured pieces display
+            overflowY: 'auto'  // Add scroll if needed
           }}>
             <div>White captured:</div>
             <CapturedPieces captured={captured.b} />
