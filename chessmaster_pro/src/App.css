@@ -61,13 +61,53 @@
 }
 
 /* Remove focus/hover/active effects for squares (flat look) */
-.cb-square:focus,
-.cb-square:active,
-.cb-square:hover {
+.cb-square:focus {
   outline: none;
-  border: none;
-  box-shadow: none;
-  background: inherit;
+}
+
+/* Highlighting styles for chess squares */
+.cb-square.cb-selected {
+  box-shadow: inset 0 0 0 4px rgba(255, 255, 0, 0.8);
+}
+
+.cb-square.cb-legal-move {
+  position: relative;
+}
+
+.cb-square.cb-legal-move::before {
+  content: "";
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: rgba(0, 128, 0, 0.3);
+  z-index: 1;
+}
+
+.cb-square.cb-threatened {
+  box-shadow: inset 0 0 0 4px rgba(255, 0, 0, 0.6);
+}
+
+.cb-square.cb-under-attack {
+  position: relative;
+}
+
+.cb-square.cb-under-attack::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 140, 0, 0.2);
+  z-index: 0;
+}
+
+/* Drag and drop styles */
+.cb-piece-dragging {
+  opacity: 0.5;
+}
+
+.cb-square.cb-drop-possible {
+  background-color: rgba(0, 128, 0, 0.2) !important;
 }
 
 body {
