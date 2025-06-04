@@ -261,6 +261,46 @@ function minimax(board, depth, isMaximizing, aiColor, state, alpha, beta) {
   return [bestEval, bestMove];
 }
 
+/* --- DraggableChessPiece: Wrapper for ChessPieceSVG that adds drag functionality --- */
+function DraggableChessPiece({ piece, position, canDrag, onDragStart }) {
+  const [row, col] = position;
+  const pieceColor = piece === piece.toUpperCase() ? 'w' : 'b';
+  
+  const [{ isDragging }, drag] = useDrag(() => ({
+    type: 'chess-piece',
+    item: () => {
+      // Notify parent component that dragging has started
+      if (onDragStart) {
+        onDragStart(row, col);
+      }
+      return { piece, position: [row, col] }
+    },
+    canDrag: () => canDrag,
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging()
+    })
+  }), [piece, row, col, canDrag, onDragStart]);
+
+  return (
+    <div
+      ref={drag}
+      style={{
+        cursor: canDrag ? 'grab' : 'default',
+        opacity: isDragging ? 0.5 : 1,
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+      data-row={row}
+      data-col={col}
+    >
+      <ChessPieceSVG piece={piece} />
+    </div>
+  );
+}
+
 /* --- ChessPieceSVG: Renders a SVG chess piece icon with outlined cartoonish style --- */
 function ChessPieceSVG({ piece }) {
   if (!piece) return null;
