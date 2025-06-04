@@ -780,6 +780,8 @@ export default function ChessMasterPro() {
   const [status, setStatus] = useState('');
   const [isCheck, setIsCheck] = useState(false);
   const [flipped, setFlipped] = useState(false);
+  const [threatenedPieces, setThreatenedPieces] = useState([]);
+  const [cellsUnderAttack, setCellsUnderAttack] = useState([]);
 
   // Advanced features: Castling/en passant state - for production-grade engine should have a full FEN parser.
   const [castlingRights, setCastlingRights] = useState({
@@ -847,6 +849,14 @@ export default function ChessMasterPro() {
     }
     // else reset winner (game continues)
     else setWinner(null);
+    
+    // Calculate threatened pieces and cells under attack
+    const opponentColor = opposite(turn);
+    const threatened = findThreatenedPieces(board, turn, {castlingRights, enPassantTarget});
+    const underAttack = findCellsUnderAttack(board, opponentColor, {castlingRights, enPassantTarget});
+    
+    setThreatenedPieces(threatened);
+    setCellsUnderAttack(underAttack);
   }, [board, turn, castlingRights, enPassantTarget]);
 
   // Undo stack management
