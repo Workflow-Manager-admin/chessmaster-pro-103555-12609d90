@@ -531,7 +531,7 @@ function ChessBoard({
   cellsUnderAttack,
   onPieceDrop
 }) {
-  // Flat, responsive chessboard replicating design: no square gaps, flush edge-to-edge, alternating color, SVG pieces.
+  // Flat, responsive chessboard with drag-and-drop and highlighting features
   return (
     <div className="cb-board">
       {Array(8)
@@ -541,30 +541,50 @@ function ChessBoard({
             .fill(0)
             .map((_, j) => {
               const [row, col] = flipped ? [7 - i, 7 - j] : [i, j];
-              const isLight = (row + col) % 2 === 0;
+              const piece = board[row][col];
+              
+              // Check if this square is the active square
+              const isSelected = activeSquare && 
+                activeSquare[0] === row && 
+                activeSquare[1] === col;
+              
+              // Check if this is a legal move for the active piece
+              const isLegalMove = legalMoves && 
+                legalMoves.some(([r, c]) => r === row && c === col);
+              
+              // Check if this piece is threatened (can be captured)
+              const isThreatened = piece && threatenedPieces && 
+                threatenedPieces.some(([r, c]) => r === row && c === col);
+              
+              // Check if this cell is under attack
+              const isUnderAttack = cellsUnderAttack && 
+                cellsUnderAttack.some(([r, c]) => r === row && c === col);
 
-              // No highlights, selection, lastmove, etc. per visual spec.
+              // Check if this piece can be dragged (is it the player's turn?)
+              const canDrag = piece && activeSquare && 
+                activeSquare[0] === row && activeSquare[1] === col;
+
               return (
-                <button
-                  key={row + '-' + col}
-                  className={`cb-square ${isLight ? 'cb-light' : 'cb-dark'}`}
-                  style={{}}
-                  tabIndex={-1}
-                  onClick={() => onSquareClick(row, col)}
-                  aria-label={`Chess square ${row},${col}`}
+                <DroppableSquare
+                  key={`${row}-${col}`}
+                  row={row}
+                  col={col}
+                  isSelected={isSelected}
+                  isLegalMove={isLegalMove}
+                  isThreatened={isThreatened}
+                  isUnderAttack={isUnderAttack}
+                  onSquareClick={onSquareClick}
+                  onPieceDrop={onPieceDrop}
                 >
-                  <span style={{
-                    width: '100%',
-                    height: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center'
-                  }}>
-                    {board[row][col] ? (
-                      <ChessPieceSVG piece={getVisualPiece(board[row][col])} />
-                    ) : null}
-                  </span>
-                </button>
+                  {piece ? (
+                    <DraggableChessPiece
+                      piece={getVisualPiece(piece)}
+                      position={[row, col]}
+                      canDrag={!!piece}
+                      onDragStart={onSquareClick}
+                    />
+                  ) : null}
+                </DroppableSquare>
               );
             })
         )}
