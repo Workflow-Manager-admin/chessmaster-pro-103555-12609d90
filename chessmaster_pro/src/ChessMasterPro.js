@@ -1339,7 +1339,16 @@ export default function ChessMasterPro() {
             />
           </DndProvider>
 
-          <GameStatus status={status} turn={turn} isCheck={isCheck} winner={winner} />
+          <GameStatus 
+            status={status} 
+            turn={turn} 
+            isCheck={isCheck} 
+            winner={winner} 
+          />
+          
+          {!gameStarted && (
+            <StartGameButton onClick={handleStartGame} gameStarted={gameStarted} />
+          )}
 
           <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', gap:18, margin:"10px 0", width:"100%"}}>
             <UndoRedoBar canUndo={canUndo} canRedo={canRedo} onUndo={handleUndo} onRedo={handleRedo} />
