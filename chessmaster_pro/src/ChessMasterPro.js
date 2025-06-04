@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 // === Theme colors as JS variables for easy styling ===
 const COLOR_PRIMARY = '#2e2e2e';
