@@ -1245,10 +1245,17 @@ export default function ChessMasterPro() {
     setRedoStack([]);
     setWinner(null);
     setClocks({w:5*60*1000, b:5*60*1000});
-    setClockRunning({w:true, b:false});
+    setClockRunning({w:false, b:false});
     setCaptured({w:[], b:[]});
     setCastlingRights({w: {K: true, Q: true}, b: {K: true, Q: true}});
     setEnPassantTarget(null);
+    setGameStarted(false);
+  }
+  
+  // Start game
+  function handleStartGame() {
+    setGameStarted(true);
+    setClockRunning({w:true, b:false});
   }
 
   // --- Layout & Rendering ---
