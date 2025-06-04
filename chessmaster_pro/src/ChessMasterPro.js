@@ -77,9 +77,84 @@ function cloneBoard(board) {
 // ========== Chess Rules Enforcement ==========
 
 // PUBLIC_INTERFACE
-export function getLegalMoves(board, fromRow, fromCol, state) {
-  // Minimal rules: Implements pawn, knight, bishop, rook, queen, king moves, plus castling/en passant as needed.
-  // Full rules enforcement is complex, this implementation focuses on move legality and king safety check for MVP.
+// Check if a square is under attack by the given color (without circular dependency)
+function isSquareAttacked(board, targetRow, targetCol, attackingColor) {
+  // Check for pawn attacks
+  const pawnDir = attackingColor === 'w' ? -1 : 1;
+  const pawnAttackRow = targetRow - pawnDir;
+  if (pawnAttackRow >= 0 && pawnAttackRow < 8) {
+    // Check diagonal pawn attacks
+    if (targetCol > 0 && board[pawnAttackRow][targetCol - 1]) {
+      const piece = board[pawnAttackRow][targetCol - 1];
+      if (piece.toUpperCase() === 'P' && colorOf(piece) === attackingColor) {
+        return true;
+      }
+    }
+    if (targetCol < 7 && board[pawnAttackRow][targetCol + 1]) {
+      const piece = board[pawnAttackRow][targetCol + 1];
+      if (piece.toUpperCase() === 'P' && colorOf(piece) === attackingColor) {
+        return true;
+      }
+    }
+  }
+
+  // Check for knight attacks
+  const knightMoves = [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]];
+  for (const [dr, dc] of knightMoves) {
+    const r = targetRow + dr, c = targetCol + dc;
+    if (r >= 0 && r < 8 && c >= 0 && c < 8 && board[r][c]) {
+      const piece = board[r][c];
+      if (piece.toUpperCase() === 'N' && colorOf(piece) === attackingColor) {
+        return true;
+      }
+    }
+  }
+
+  // Check for sliding piece attacks (bishop, rook, queen)
+  const directions = [
+    [-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]
+  ];
+  for (const [dr, dc] of directions) {
+    let r = targetRow + dr, c = targetCol + dc;
+    while (r >= 0 && r < 8 && c >= 0 && c < 8) {
+      if (board[r][c]) {
+        const piece = board[r][c];
+        if (colorOf(piece) === attackingColor) {
+          const pieceType = piece.toUpperCase();
+          // Check if this piece can attack in this direction
+          const isDiagonal = dr !== 0 && dc !== 0;
+          const isHorizontalVertical = dr === 0 || dc === 0;
+          
+          if ((isDiagonal && (pieceType === 'B' || pieceType === 'Q')) ||
+              (isHorizontalVertical && (pieceType === 'R' || pieceType === 'Q'))) {
+            return true;
+          }
+        }
+        break; // Piece blocks further movement
+      }
+      r += dr;
+      c += dc;
+    }
+  }
+
+  // Check for king attacks
+  const kingMoves = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+  for (const [dr, dc] of kingMoves) {
+    const r = targetRow + dr, c = targetCol + dc;
+    if (r >= 0 && r < 8 && c >= 0 && c < 8 && board[r][c]) {
+      const piece = board[r][c];
+      if (piece.toUpperCase() === 'K' && colorOf(piece) === attackingColor) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+// PUBLIC_INTERFACE
+// Generate pseudo-legal moves (moves that follow piece movement rules but may leave king in check)
+function getPseudoLegalMoves(board, fromRow, fromCol, state) {
   const moves = [];
   const piece = board[fromRow][fromCol];
   if (!piece) return [];
@@ -90,118 +165,234 @@ export function getLegalMoves(board, fromRow, fromCol, state) {
   if (piece.toUpperCase() === 'P') {
     const dir = color === 'w' ? -1 : 1;
     const startRow = color === 'w' ? 6 : 1;
+    
     // Forward move
-    if (board[fromRow + dir] && !board[fromRow + dir][fromCol]) {
+    if (fromRow + dir >= 0 && fromRow + dir < 8 && !board[fromRow + dir][fromCol]) {
       moves.push([fromRow + dir, fromCol]);
       // Double move
-      if (fromRow === startRow && !board[fromRow + dir * 2][fromCol]) {
+      if (fromRow === startRow && fromRow + dir * 2 >= 0 && fromRow + dir * 2 < 8 && !board[fromRow + dir * 2][fromCol]) {
         moves.push([fromRow + dir * 2, fromCol]);
       }
     }
+    
     // Captures
     [fromCol-1, fromCol+1].forEach(col => {
-      if (col >= 0 && col < 8 && board[fromRow + dir] && board[fromRow + dir][col]
-          && colorOf(board[fromRow + dir][col]) === theirColor) {
-        moves.push([fromRow + dir, col]);
-      }
-      // En passant
-      if (state.enPassantTarget) {
-        const [epRow, epCol] = algToPos(state.enPassantTarget);
-        if ((fromRow + dir) === epRow && col === epCol) {
-          moves.push([epRow, epCol]);
+      if (col >= 0 && col < 8 && fromRow + dir >= 0 && fromRow + dir < 8) {
+        const targetPiece = board[fromRow + dir][col];
+        if (targetPiece && colorOf(targetPiece) === theirColor) {
+          moves.push([fromRow + dir, col]);
+        }
+        // En passant
+        if (state && state.enPassantTarget) {
+          const [epRow, epCol] = algToPos(state.enPassantTarget);
+          if ((fromRow + dir) === epRow && col === epCol) {
+            moves.push([epRow, epCol]);
+          }
         }
       }
     });
     return moves;
   }
+  
   // Knight
   if (piece.toUpperCase() === 'N') {
     [[-2,-1],[-2,1],[-1,-2],[-1,2],[1,-2],[1,2],[2,-1],[2,1]]
-      .forEach(([dr, dc])=>{
+      .forEach(([dr, dc]) => {
         const r = fromRow + dr, c = fromCol + dc;
-        if (r>=0 && r<8 && c>=0 && c<8 && colorOf(board[r][c])!==color) {
+        if (r >= 0 && r < 8 && c >= 0 && c < 8 && colorOf(board[r][c]) !== color) {
           moves.push([r, c]);
         }
       });
     return moves;
   }
+  
   // Bishop, Rook, Queen
   const sliders = [];
-  if (piece.toUpperCase() === 'B' || piece.toUpperCase() === 'Q') sliders.push([-1,-1],[-1,1],[1,-1],[1,1]);
-  if (piece.toUpperCase() === 'R' || piece.toUpperCase() === 'Q') sliders.push([-1,0],[1,0],[0,-1],[0,1]);
+  if (piece.toUpperCase() === 'B' || piece.toUpperCase() === 'Q') {
+    sliders.push([-1,-1],[-1,1],[1,-1],[1,1]);
+  }
+  if (piece.toUpperCase() === 'R' || piece.toUpperCase() === 'Q') {
+    sliders.push([-1,0],[1,0],[0,-1],[0,1]);
+  }
   if (sliders.length) {
-    for (let [dr, dc] of sliders) {
+    for (const [dr, dc] of sliders) {
       let r = fromRow + dr, c = fromCol + dc;
-      while (r>=0 && r<8 && c>=0 && c<8) {
+      while (r >= 0 && r < 8 && c >= 0 && c < 8) {
         if (!board[r][c]) {
           moves.push([r, c]);
         } else {
-          if (colorOf(board[r][c]) !== color) moves.push([r, c]);
+          if (colorOf(board[r][c]) !== color) {
+            moves.push([r, c]);
+          }
           break;
         }
-        r += dr; c += dc;
+        r += dr;
+        c += dc;
       }
     }
     return moves;
   }
-  // King (+castling)
+  
+  // King
   if (piece.toUpperCase() === 'K') {
     [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]]
-      .forEach(([dr, dc])=>{
-        const r = fromRow+dr, c = fromCol+dc;
-        if (r>=0 && r<8 && c>=0 && c<8 && colorOf(board[r][c])!==color) {
-          moves.push([r,c]);
+      .forEach(([dr, dc]) => {
+        const r = fromRow + dr, c = fromCol + dc;
+        if (r >= 0 && r < 8 && c >= 0 && c < 8 && colorOf(board[r][c]) !== color) {
+          moves.push([r, c]);
         }
       });
-    // Castling (check rights & squares)
-    if (!state || !state.castlingRights) return moves;
-    const rights = state.castlingRights[color];
-    if (rights?.K && canCastle(board, color, 'K', state)) moves.push([fromRow, fromCol+2]);
-    if (rights?.Q && canCastle(board, color, 'Q', state)) moves.push([fromRow, fromCol-2]);
+    
+    // Castling
+    if (state && state.castlingRights) {
+      const rights = state.castlingRights[color];
+      if (rights?.K && canCastle(board, color, 'K', state)) {
+        moves.push([fromRow, fromCol + 2]);
+      }
+      if (rights?.Q && canCastle(board, color, 'Q', state)) {
+        moves.push([fromRow, fromCol - 2]);
+      }
+    }
     return moves;
   }
+  
   return moves;
-
-  // Pawn promotion: handled elsewhere, i.e., in movePiece.
 }
 
-// Castling helper
-function canCastle(board, color, side, state) {
-  const baseRow = color==='w'?7:0;
-  if (side==='K') {
-    // king side: must be empty between king and rook
-    if (board[baseRow][5] || board[baseRow][6]) return false;
-    // TODO: Should check king is not in, through, or to check
-    return true;
-  } else {
-    // queen side
-    if (board[baseRow][1] || board[baseRow][2] || board[baseRow][3])
-      return false;
-    // TODO: Should check king is not in, through, or to check
-    return true;
+// PUBLIC_INTERFACE
+// Simulate a move and check if it leaves the king in check
+function wouldMoveLeaveKingInCheck(board, fromRow, fromCol, toRow, toCol, color, state) {
+  // Create a copy of the board with the move applied
+  const newBoard = cloneBoard(board);
+  const piece = newBoard[fromRow][fromCol];
+  const target = newBoard[toRow][toCol];
+  
+  // Apply the move
+  newBoard[toRow][toCol] = piece;
+  newBoard[fromRow][fromCol] = '';
+  
+  // Handle special moves
+  if (piece.toUpperCase() === 'P' && fromCol !== toCol && !target) {
+    // En passant capture - remove the captured pawn
+    const captureRow = color === 'w' ? toRow + 1 : toRow - 1;
+    newBoard[captureRow][toCol] = '';
   }
-}
-
-// Minimal check detection
-function isKingInCheck(board, color) {
+  
+  if (piece.toUpperCase() === 'K' && Math.abs(toCol - fromCol) === 2) {
+    // Castling - move the rook
+    if (toCol > fromCol) {
+      // King side castling
+      newBoard[toRow][5] = newBoard[toRow][7];
+      newBoard[toRow][7] = '';
+    } else {
+      // Queen side castling
+      newBoard[toRow][3] = newBoard[toRow][0];
+      newBoard[toRow][0] = '';
+    }
+  }
+  
+  // Find the king position after the move
   let kingPos = null;
-  for (let r=0;r<8;++r) for (let c=0;c<8;++c) {
-    if (!board[r][c]) continue;
-    if (board[r][c].toUpperCase()==='K' && colorOf(board[r][c])===color)
-      kingPos = [r,c];
+  for (let r = 0; r < 8; ++r) {
+    for (let c = 0; c < 8; ++c) {
+      if (newBoard[r][c] && newBoard[r][c].toUpperCase() === 'K' && colorOf(newBoard[r][c]) === color) {
+        kingPos = [r, c];
+        break;
+      }
+    }
+    if (kingPos) break;
   }
-  if (!kingPos) return false;
-  // Look for any enemy piece attacking king's square
-  for (let r=0;r<8;++r) for (let c=0;c<8;++c) {
-    if (!board[r][c] || colorOf(board[r][c])!==opposite(color)) continue;
-    const theirMoves = getLegalMoves(board, r, c, {...stateDummyForCheck(board, color)});
-    if (theirMoves.some(([tr,tc])=>tr===kingPos[0]&&tc===kingPos[1])) return true;
-  }
-  return false;
+  
+  if (!kingPos) return true; // King missing, consider as check
+  
+  // Check if the king is under attack
+  return isSquareAttacked(newBoard, kingPos[0], kingPos[1], opposite(color));
 }
-function stateDummyForCheck(board, color) {
-  // provides plausible state for getLegalMoves for check detection
-  return { castlingRights: {w:{K:0, Q:0}, b:{K:0, Q:0}}, enPassantTarget: null };
+
+// PUBLIC_INTERFACE
+// Get all legal moves for a piece (filtered to exclude moves that leave king in check)
+export function getLegalMoves(board, fromRow, fromCol, state) {
+  const piece = board[fromRow][fromCol];
+  if (!piece) return [];
+  const color = colorOf(piece);
+  
+  // Get all pseudo-legal moves
+  const pseudoMoves = getPseudoLegalMoves(board, fromRow, fromCol, state);
+  
+  // Filter out moves that would leave the king in check
+  const legalMoves = [];
+  for (const [toRow, toCol] of pseudoMoves) {
+    if (!wouldMoveLeaveKingInCheck(board, fromRow, fromCol, toRow, toCol, color, state)) {
+      legalMoves.push([toRow, toCol]);
+    }
+  }
+  
+  return legalMoves;
+}
+
+// Enhanced castling validation
+function canCastle(board, color, side, state) {
+  const baseRow = color === 'w' ? 7 : 0;
+  const kingCol = 4;
+  
+  // King must not be in check
+  if (isSquareAttacked(board, baseRow, kingCol, opposite(color))) {
+    return false;
+  }
+  
+  if (side === 'K') {
+    // King side: squares f1/f8 and g1/g8 must be empty
+    if (board[baseRow][5] || board[baseRow][6]) return false;
+    
+    // King must not pass through or end up in check
+    if (isSquareAttacked(board, baseRow, 5, opposite(color)) ||
+        isSquareAttacked(board, baseRow, 6, opposite(color))) {
+      return false;
+    }
+    
+    // Rook must be present
+    if (!board[baseRow][7] || board[baseRow][7].toUpperCase() !== 'R' || 
+        colorOf(board[baseRow][7]) !== color) {
+      return false;
+    }
+  } else {
+    // Queen side: squares b1/b8, c1/c8, and d1/d8 must be empty
+    if (board[baseRow][1] || board[baseRow][2] || board[baseRow][3]) return false;
+    
+    // King must not pass through or end up in check
+    if (isSquareAttacked(board, baseRow, 2, opposite(color)) ||
+        isSquareAttacked(board, baseRow, 3, opposite(color))) {
+      return false;
+    }
+    
+    // Rook must be present
+    if (!board[baseRow][0] || board[baseRow][0].toUpperCase() !== 'R' || 
+        colorOf(board[baseRow][0]) !== color) {
+      return false;
+    }
+  }
+  
+  return true;
+}
+
+// Updated check detection function
+function isKingInCheck(board, color) {
+  // Find the king
+  let kingPos = null;
+  for (let r = 0; r < 8; ++r) {
+    for (let c = 0; c < 8; ++c) {
+      if (board[r][c] && board[r][c].toUpperCase() === 'K' && colorOf(board[r][c]) === color) {
+        kingPos = [r, c];
+        break;
+      }
+    }
+    if (kingPos) break;
+  }
+  
+  if (!kingPos) return false;
+  
+  // Check if the king square is under attack
+  return isSquareAttacked(board, kingPos[0], kingPos[1], opposite(color));
 }
 
 // ========== Minimax AI ==========
