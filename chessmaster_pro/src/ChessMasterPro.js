@@ -463,6 +463,61 @@ function ChessPieceSVG({ piece }) {
   }
 }
 
+/* --- DroppableSquare: Chess square that can accept dropped pieces --- */
+function DroppableSquare({
+  row,
+  col,
+  children,
+  isLegalMove,
+  isThreatened,
+  isUnderAttack,
+  isSelected,
+  onSquareClick,
+  onPieceDrop
+}) {
+  const [{ isOver, canDrop }, drop] = useDrop(() => ({
+    accept: 'chess-piece',
+    drop: (item) => {
+      if (onPieceDrop) {
+        onPieceDrop(item.position, [row, col]);
+      }
+      return { moved: true };
+    },
+    canDrop: () => isLegalMove,
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+      canDrop: !!monitor.canDrop()
+    })
+  }), [row, col, isLegalMove, onPieceDrop]);
+
+  const isLight = (row + col) % 2 === 0;
+  
+  const squareClasses = `cb-square ${isLight ? 'cb-light' : 'cb-dark'}
+    ${isSelected ? 'cb-selected' : ''} 
+    ${isLegalMove ? 'cb-legal-move' : ''}
+    ${isThreatened ? 'cb-threatened' : ''}
+    ${isUnderAttack ? 'cb-under-attack' : ''}
+    ${isOver && canDrop ? 'cb-drop-possible' : ''}`;
+
+  return (
+    <div 
+      ref={drop}
+      className={squareClasses}
+      onClick={() => onSquareClick(row, col)}
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
 // ========== ChessBoard UI ==========
 
 function ChessBoard({
@@ -471,7 +526,10 @@ function ChessBoard({
   legalMoves,
   onSquareClick,
   lastMoveSquares,
-  flipped
+  flipped,
+  threatenedPieces,
+  cellsUnderAttack,
+  onPieceDrop
 }) {
   // Flat, responsive chessboard replicating design: no square gaps, flush edge-to-edge, alternating color, SVG pieces.
   return (
